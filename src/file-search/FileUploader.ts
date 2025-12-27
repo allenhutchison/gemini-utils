@@ -12,6 +12,7 @@ import {
   ProgressCallback,
 } from './mimeTypes.js';
 import { FileSearchManager } from './FileSearchManager.js';
+import { FileSystemAdapter, FileContent, NodeFileSystemAdapter } from './FileSystemAdapter.js';
 
 /**
  * Represents metadata for an existing file in the store.
@@ -48,9 +49,9 @@ export interface UploadConfig {
 }
 
 /**
- * Configuration options for directory upload operations.
+ * Configuration options for directory/batch upload operations.
  */
-export interface DirectoryUploadConfig {
+export interface BatchUploadConfig {
   /** Chunking configuration for uploads */
   chunkingConfig?: unknown;
   /** Progress callback for tracking upload status */
@@ -68,7 +69,7 @@ export interface DirectoryUploadConfig {
 
 /**
  * Handles file and directory uploads to Google's Gemini File Search API.
- * Supports smart sync, parallel uploads, and progress tracking.
+ * Supports smart sync, parallel uploads, progress tracking, and custom file system adapters.
  */
 export class FileUploader {
   private fileSearchManager: FileSearchManager;
@@ -77,25 +78,6 @@ export class FileUploader {
   constructor(private client: GoogleGenAI, logger?: Logger) {
     this.fileSearchManager = new FileSearchManager(client);
     this.logger = logger;
-  }
-
-  /**
-   * Loads gitignore rules from a directory.
-   * Looks for .gitignore in the root directory and returns an Ignore instance.
-   */
-  private loadGitignoreRules(rootDir: string): Ignore {
-    const ig = ignore();
-
-    // Always ignore .git directory
-    ig.add('.git');
-
-    const gitignorePath = path.join(rootDir, '.gitignore');
-    if (fs.existsSync(gitignorePath)) {
-      const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
-      ig.add(gitignoreContent);
-    }
-
-    return ig;
   }
 
   /**
@@ -135,6 +117,249 @@ export class FileUploader {
     return hashMap;
   }
 
+  // ==================== Content-based Upload (works with any adapter) ====================
+
+  /**
+   * Uploads file content directly to a file search store.
+   * This method works with any file system adapter - the content is already prepared.
+   *
+   * @param content - The file content to upload
+   * @param storeName - The store to upload to
+   * @param config - Upload configuration
+   */
+  async uploadContent(
+    content: FileContent,
+    storeName: string,
+    config?: UploadConfig
+  ): Promise<unknown> {
+    // Validate size
+    let size: number;
+    if (content.data instanceof Blob) {
+      size = content.data.size;
+    } else if (Buffer.isBuffer(content.data)) {
+      size = content.data.length;
+    } else {
+      // String path - get file size
+      size = fs.statSync(content.data).size;
+    }
+
+    if (size > FILE_SIZE_LIMITS.MAX_FILE_SIZE_BYTES) {
+      throw new FileSizeExceededError(
+        content.relativePath,
+        size,
+        FILE_SIZE_LIMITS.MAX_FILE_SIZE_BYTES
+      );
+    }
+
+    try {
+      // Emit progress event if callback provided
+      config?.onProgress?.({
+        type: 'file_start',
+        currentFile: content.displayName,
+      });
+
+      this.logger?.debug(`Uploading ${content.displayName} to ${storeName}...`);
+
+      // Prepare the file data for upload
+      let fileData: Blob | string;
+      if (content.data instanceof Blob) {
+        fileData = content.data;
+      } else if (Buffer.isBuffer(content.data)) {
+        fileData = new Blob([content.data], { type: content.mimeType });
+      } else {
+        // String path - pass directly
+        fileData = content.data;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const op = await this.client.fileSearchStores.uploadToFileSearchStore({
+        fileSearchStoreName: storeName,
+        file: fileData,
+        config: {
+          displayName: content.displayName,
+          mimeType: content.mimeType,
+          chunkingConfig: config?.chunkingConfig,
+          metadata: {
+            path: content.relativePath,
+            hash: content.hash,
+            last_modified: content.lastModified,
+          }
+        } as any,
+      });
+
+      // Call completion callback before emitting progress event
+      config?.onFileComplete?.();
+
+      // Emit complete event
+      config?.onProgress?.({
+        type: 'file_complete',
+        currentFile: content.displayName,
+      });
+
+      return op;
+    } catch (error) {
+      this.logger?.error(`Failed to upload ${content.displayName}:`, (error as Error).message);
+
+      // Emit error event
+      config?.onProgress?.({
+        type: 'file_error',
+        currentFile: content.displayName,
+        error: error as Error,
+      });
+
+      throw new FileUploadError(content.relativePath, error as Error);
+    }
+  }
+
+  /**
+   * Uploads files using a FileSystemAdapter.
+   * This is the recommended method for custom environments (e.g., Obsidian, browser).
+   *
+   * @param adapter - The file system adapter to use
+   * @param basePath - Base path to list files from
+   * @param storeName - The store to upload to
+   * @param config - Upload configuration
+   */
+  async uploadWithAdapter(
+    adapter: FileSystemAdapter,
+    basePath: string,
+    storeName: string,
+    config?: BatchUploadConfig
+  ): Promise<unknown[]> {
+    const maxConcurrent = config?.parallel?.maxConcurrent ?? 5;
+    const smartSync = config?.smartSync ?? false;
+
+    // List files using the adapter
+    const allFiles = await adapter.listFiles(basePath);
+
+    // Fetch existing file hashes if smart sync is enabled
+    let existingHashes = new Map<string, ExistingFileInfo>();
+    if (smartSync) {
+      this.logger?.debug('Smart sync enabled: fetching existing file hashes...');
+      existingHashes = await this.getExistingFileHashes(storeName);
+      this.logger?.debug(`Found ${existingHashes.size} existing files in store`);
+    }
+
+    // Emit start event
+    config?.onProgress?.({
+      type: 'start',
+      totalFiles: allFiles.length,
+      percentage: 0,
+    });
+
+    const results: unknown[] = [];
+    let completedFiles = 0;
+    let skippedFiles = 0;
+    let failedFiles = 0;
+
+    // Process files in batches of maxConcurrent
+    for (let i = 0; i < allFiles.length; i += maxConcurrent) {
+      const batch = allFiles.slice(i, i + maxConcurrent);
+
+      // Use Promise.allSettled to continue on failures
+      const batchResults = await Promise.allSettled(
+        batch.map(async (filePath, idx) => {
+          const fileIndex = i + idx + 1;
+
+          // Check if we should skip this file (smart sync)
+          if (smartSync) {
+            const existingInfo = existingHashes.get(filePath);
+            if (existingInfo) {
+              // Calculate local file hash
+              const localHash = await adapter.computeHash(filePath);
+              if (localHash === existingInfo.hash) {
+                // File unchanged, skip upload
+                skippedFiles++;
+                config?.onProgress?.({
+                  type: 'file_skipped',
+                  currentFile: filePath,
+                  currentFileIndex: fileIndex,
+                  totalFiles: allFiles.length,
+                  completedFiles,
+                  skippedFiles,
+                  percentage: Math.round(((completedFiles + skippedFiles) / allFiles.length) * 100),
+                });
+                return { skipped: true, path: filePath };
+              }
+            }
+          }
+
+          // Read file content using adapter
+          const content = await adapter.readFileForUpload(filePath, filePath);
+          if (!content) {
+            throw new Error(`Failed to read file: ${filePath}`);
+          }
+
+          return this.uploadContent(content, storeName, {
+            ...config,
+            onFileComplete: () => {
+              completedFiles++;
+            },
+            onProgress: (event) => {
+              // Augment progress events with batch context
+              const augmentedEvent = {
+                ...event,
+                currentFileIndex: fileIndex,
+                totalFiles: allFiles.length,
+                completedFiles,
+                skippedFiles,
+                percentage: Math.round(((completedFiles + skippedFiles) / allFiles.length) * 100),
+              };
+              config?.onProgress?.(augmentedEvent);
+            },
+          });
+        })
+      );
+
+      // Track results
+      for (const result of batchResults) {
+        if (result.status === 'fulfilled') {
+          // Don't add skipped files to results
+          const value = result.value as { skipped?: boolean };
+          if (!value?.skipped) {
+            results.push(result.value);
+          }
+        } else {
+          this.logger?.error('Upload failed:', result.reason);
+          failedFiles++;
+        }
+      }
+    }
+
+    // Emit complete event
+    config?.onProgress?.({
+      type: 'complete',
+      totalFiles: allFiles.length,
+      completedFiles,
+      skippedFiles,
+      failedFiles,
+      percentage: 100,
+    });
+
+    return results;
+  }
+
+  // ==================== Path-based Upload (Node.js filesystem) ====================
+
+  /**
+   * Loads gitignore rules from a directory.
+   * Looks for .gitignore in the root directory and returns an Ignore instance.
+   */
+  private loadGitignoreRules(rootDir: string): Ignore {
+    const ig = ignore();
+
+    // Always ignore .git directory
+    ig.add('.git');
+
+    const gitignorePath = path.join(rootDir, '.gitignore');
+    if (fs.existsSync(gitignorePath)) {
+      const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
+      ig.add(gitignoreContent);
+    }
+
+    return ig;
+  }
+
   private determineMimeType(filePath: string): string {
     const ext = path.extname(filePath).toLowerCase();
     const result = getMimeTypeWithFallback(filePath);
@@ -167,7 +392,8 @@ export class FileUploader {
   }
 
   /**
-   * Uploads a single file to a file search store.
+   * Uploads a single file from the filesystem to a file search store.
+   * For custom file systems, use uploadContent() or uploadWithAdapter() instead.
    */
   async uploadFile(
     filePath: string,
@@ -188,62 +414,27 @@ export class FileUploader {
     const lastModified = stats.mtime.toISOString();
     const relativePath = config?.relativePath || fileName;
 
-    try {
-      // Emit progress event if callback provided
-      config?.onProgress?.({
-        type: 'file_start',
-        currentFile: fileName,
-      });
+    // Create FileContent and delegate to uploadContent
+    const content: FileContent = {
+      data: filePath, // Pass path directly - SDK handles it
+      mimeType,
+      displayName: fileName,
+      relativePath,
+      hash,
+      lastModified,
+    };
 
-      this.logger?.debug(`Uploading ${fileName} to ${storeName} with metadata (path: ${relativePath})...`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const op = await this.client.fileSearchStores.uploadToFileSearchStore({
-        fileSearchStoreName: storeName,
-        file: filePath,
-        config: {
-          displayName: fileName,
-          mimeType,
-          chunkingConfig: config?.chunkingConfig,
-          metadata: {
-            path: relativePath,
-            hash: hash,
-            last_modified: lastModified,
-          }
-        } as any,
-      });
-
-      // Call completion callback before emitting progress event
-      config?.onFileComplete?.();
-
-      // Emit complete event
-      config?.onProgress?.({
-        type: 'file_complete',
-        currentFile: fileName,
-      });
-
-      return op;
-    } catch (error) {
-      this.logger?.error(`Failed to upload ${fileName}:`, (error as Error).message);
-
-      // Emit error event
-      config?.onProgress?.({
-        type: 'file_error',
-        currentFile: fileName,
-        error: error as Error,
-      });
-
-      throw new FileUploadError(filePath, error as Error);
-    }
+    return this.uploadContent(content, storeName, config);
   }
 
   /**
    * Uploads all files in a directory to a file search store.
-   * Respects .gitignore rules, supports parallel uploads, and optional smart sync.
+   * Uses the Node.js filesystem. For custom file systems, use uploadWithAdapter().
    */
   async uploadDirectory(
     dirPath: string,
     storeName: string,
-    config?: DirectoryUploadConfig
+    config?: BatchUploadConfig
   ): Promise<unknown[]> {
     const absoluteDirPath = path.resolve(dirPath);
     const maxConcurrent = config?.parallel?.maxConcurrent ?? 5;

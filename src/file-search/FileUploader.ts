@@ -12,7 +12,7 @@ import {
   ProgressCallback,
 } from './mimeTypes.js';
 import { FileSearchManager } from './FileSearchManager.js';
-import { FileSystemAdapter, FileContent, NodeFileSystemAdapter } from './FileSystemAdapter.js';
+import { FileSystemAdapter, FileContent } from './FileSystemAdapter.js';
 
 /**
  * Represents metadata for an existing file in the store.

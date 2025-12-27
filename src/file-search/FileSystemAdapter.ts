@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import ignore, { Ignore } from 'ignore';
+import { getMimeTypeWithFallback } from './mimeTypes.js';
 
 /**
  * Represents file metadata
@@ -85,23 +86,29 @@ export interface FileSystemAdapter {
  * Uses fs module for file operations and supports .gitignore patterns.
  */
 export class NodeFileSystemAdapter implements FileSystemAdapter {
-  private ignoreRules: Ignore | null = null;
-  private rootDir: string = '';
-  private supportedExtensions: Set<string>;
+  private readonly ignoreRules: Ignore;
+  private readonly rootDir: string;
+  private readonly supportedExtensions: Set<string>;
 
   /**
    * Create a new Node.js filesystem adapter.
+   * @param rootDir - Root directory for file operations
    * @param options - Configuration options
    */
-  constructor(private options: {
-    /** Extensions to index (e.g., ['.md', '.txt']). If empty, indexes all supported types. */
-    extensions?: string[];
-    /** Additional patterns to ignore (in addition to .gitignore) */
-    ignorePatterns?: string[];
-    /** Whether to skip hidden files (starting with .) */
-    skipHidden?: boolean;
-  } = {}) {
+  constructor(
+    rootDir: string,
+    private options: {
+      /** Extensions to index (e.g., ['.md', '.txt']). If empty, indexes all supported types. */
+      extensions?: string[];
+      /** Additional patterns to ignore (in addition to .gitignore) */
+      ignorePatterns?: string[];
+      /** Whether to skip hidden files (starting with .) */
+      skipHidden?: boolean;
+    } = {}
+  ) {
+    this.rootDir = path.resolve(rootDir);
     this.supportedExtensions = new Set(options.extensions || []);
+    this.ignoreRules = this.loadIgnoreRules(this.rootDir);
   }
 
   /**
@@ -128,10 +135,8 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
     return ig;
   }
 
-  async listFiles(dirPath: string): Promise<string[]> {
-    this.rootDir = path.resolve(dirPath);
-    this.ignoreRules = this.loadIgnoreRules(this.rootDir);
-
+  async listFiles(_dirPath: string): Promise<string[]> {
+    // Note: dirPath parameter is ignored - rootDir is set in constructor
     const getFilesRecursive = (dir: string): string[] => {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
       const files: string[] = [];
@@ -147,7 +152,7 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
 
         // Check ignore rules
         const checkPath = entry.isDirectory() ? relativePath + '/' : relativePath;
-        if (this.ignoreRules?.ignores(checkPath)) {
+        if (this.ignoreRules.ignores(checkPath)) {
           continue;
         }
 
@@ -166,7 +171,7 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
 
   async getFileInfo(filePath: string): Promise<FileInfo | null> {
     try {
-      const fullPath = this.rootDir ? path.join(this.rootDir, filePath) : filePath;
+      const fullPath = path.join(this.rootDir, filePath);
       const stats = fs.statSync(fullPath);
 
       return {
@@ -181,14 +186,18 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
 
   async readFileForUpload(filePath: string, relativePath: string): Promise<FileContent | null> {
     try {
-      const fullPath = this.rootDir ? path.join(this.rootDir, filePath) : filePath;
+      const fullPath = path.join(this.rootDir, filePath);
       const stats = fs.statSync(fullPath);
       const content = fs.readFileSync(fullPath);
-      const hash = await this.computeHash(filePath);
 
-      // Determine MIME type based on extension
-      const ext = path.extname(filePath).toLowerCase();
-      const mimeType = this.getMimeType(ext);
+      // Compute hash from buffer directly (avoid reading file twice)
+      const hashSum = crypto.createHash('sha256');
+      hashSum.update(content);
+      const hash = hashSum.digest('hex');
+
+      // Determine MIME type using shared utility
+      const mimeResult = getMimeTypeWithFallback(filePath);
+      const mimeType = mimeResult?.mimeType || 'text/plain';
 
       return {
         data: content,
@@ -204,11 +213,15 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
   }
 
   async computeHash(filePath: string): Promise<string> {
-    const fullPath = this.rootDir ? path.join(this.rootDir, filePath) : filePath;
-    const fileBuffer = fs.readFileSync(fullPath);
-    const hashSum = crypto.createHash('sha256');
-    hashSum.update(fileBuffer);
-    return hashSum.digest('hex');
+    try {
+      const fullPath = path.join(this.rootDir, filePath);
+      const fileBuffer = fs.readFileSync(fullPath);
+      const hashSum = crypto.createHash('sha256');
+      hashSum.update(fileBuffer);
+      return hashSum.digest('hex');
+    } catch {
+      return '';
+    }
   }
 
   shouldIndex(filePath: string): boolean {
@@ -219,25 +232,5 @@ export class NodeFileSystemAdapter implements FileSystemAdapter {
 
     const ext = path.extname(filePath).toLowerCase();
     return this.supportedExtensions.has(ext);
-  }
-
-  /**
-   * Get MIME type for a file extension.
-   * Override this method to customize MIME type detection.
-   */
-  protected getMimeType(ext: string): string {
-    const mimeTypes: Record<string, string> = {
-      '.md': 'text/markdown',
-      '.txt': 'text/plain',
-      '.json': 'text/plain',
-      '.js': 'text/plain',
-      '.ts': 'text/plain',
-      '.html': 'text/html',
-      '.css': 'text/plain',
-      '.pdf': 'application/pdf',
-      '.xml': 'application/xml',
-    };
-
-    return mimeTypes[ext] || 'text/plain';
   }
 }

@@ -30,7 +30,7 @@ export class ReportGenerator {
    */
   generateMarkdown(outputs: InteractionOutput[]): string {
     let markdown = '# Research Report\n\n';
-    const citations: string[] = [];
+    const citations = new Set<string>();
 
     for (const output of outputs) {
       if (isTextContent(output)) {
@@ -40,8 +40,8 @@ export class ReportGenerator {
         const annotations = output.annotations as TextAnnotation[] | undefined;
         if (annotations) {
           for (const annotation of annotations) {
-            if (annotation.source && !citations.includes(annotation.source)) {
-              citations.push(annotation.source);
+            if (annotation.source) {
+              citations.add(annotation.source);
             }
           }
         }
@@ -49,7 +49,7 @@ export class ReportGenerator {
     }
 
     // Append citations section if any were found
-    if (citations.length > 0) {
+    if (citations.size > 0) {
       markdown += '### Citations\n';
       for (const source of citations) {
         markdown += `- ${source}\n`;

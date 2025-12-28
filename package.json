@@ -1,7 +1,7 @@
 {
   "name": "@allenhutchison/gemini-utils",
-  "version": "0.2.0",
-  "description": "Shared utilities for Google Gemini AI projects - file upload, MIME validation, and operation tracking",
+  "version": "0.3.0",
+  "description": "Shared utilities for Google Gemini AI projects - file upload, MIME validation, operation tracking, and deep research",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -23,7 +23,10 @@
     "ai",
     "file-upload",
     "rag",
-    "file-search"
+    "file-search",
+    "deep-research",
+    "research",
+    "interactions"
   ],
   "author": "Allen Hutchison",
   "license": "MIT",

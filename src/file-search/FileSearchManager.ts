@@ -1,4 +1,8 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Interactions } from '@google/genai';
+
+// Re-export SDK interaction types for consumers
+export type Interaction = Interactions.Interaction;
+export type TextContent = Interactions.TextContent;
 
 /**
  * Represents a document in a file search store.
@@ -63,10 +67,21 @@ export class FileSearchManager {
    * @param storeName - Store resource name
    * @param query - Search query
    * @param model - Model to use for the query (default: gemini-2.5-flash)
+   * @returns The interaction response containing query results
    */
-  async queryStore(storeName: string, query: string, model: string = 'gemini-2.5-flash'): Promise<unknown> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return await (this.client as any).interactions.create({
+  async queryStore(storeName: string, query: string, model: string = 'gemini-2.5-flash'): Promise<Interaction> {
+    // The interactions API is not yet in the SDK types, so we use a type assertion
+    const client = this.client as GoogleGenAI & {
+      interactions: {
+        create(params: {
+          model: string;
+          input: string;
+          tools: Array<{ type: string; file_search_store_names: string[] }>;
+        }): Promise<Interaction>;
+      };
+    };
+
+    return await client.interactions.create({
       model: model,
       input: query,
       tools: [

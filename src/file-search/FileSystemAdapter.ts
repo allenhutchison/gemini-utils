@@ -34,6 +34,8 @@ export interface FileContent {
   hash: string;
   /** Last modified time as ISO string */
   lastModified: string;
+  /** Optional custom metadata to attach to the uploaded document */
+  customMetadata?: Array<{ key: string; stringValue: string }>;
 }
 
 /**

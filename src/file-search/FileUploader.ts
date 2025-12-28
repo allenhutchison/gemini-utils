@@ -179,11 +179,12 @@ export class FileUploader {
           displayName: content.displayName,
           mimeType: content.mimeType,
           chunkingConfig: config?.chunkingConfig,
-          metadata: {
-            path: content.relativePath,
-            hash: content.hash,
-            last_modified: content.lastModified,
-          }
+          customMetadata: [
+            { key: 'path', stringValue: content.relativePath },
+            { key: 'hash', stringValue: content.hash },
+            { key: 'last_modified', stringValue: content.lastModified },
+            ...(content.customMetadata || []),
+          ],
         } as any,
       });
 

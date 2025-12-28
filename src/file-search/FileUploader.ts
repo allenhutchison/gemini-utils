@@ -171,7 +171,6 @@ export class FileUploader {
         fileData = content.data;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const op = await this.client.fileSearchStores.uploadToFileSearchStore({
         fileSearchStoreName: storeName,
         file: fileData,

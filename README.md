@@ -16,7 +16,7 @@ npm install @allenhutchison/gemini-utils @google/genai
 - **Progress Tracking**: Real-time progress callbacks for upload operations
 - **Operation Management**: Track long-running upload operations with customizable storage
 - **Deep Research**: Run long-running research tasks with Gemini's deep research models
-- **Report Generation**: Convert research outputs to formatted markdown with citations
+- **Report Generation**: Convert research outputs to formatted Markdown with citations
 
 ## Usage
 

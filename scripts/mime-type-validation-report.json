@@ -1,0 +1,261 @@
+{
+  "totalTests": 36,
+  "passed": 36,
+  "failed": 0,
+  "skipped": 0,
+  "results": [
+    {
+      "extension": ".pdf",
+      "mimeType": "application/pdf",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 3151
+    },
+    {
+      "extension": ".xml",
+      "mimeType": "application/xml",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2314
+    },
+    {
+      "extension": ".txt",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1828
+    },
+    {
+      "extension": ".text",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1543
+    },
+    {
+      "extension": ".log",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1675
+    },
+    {
+      "extension": ".out",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1832
+    },
+    {
+      "extension": ".env",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1977
+    },
+    {
+      "extension": ".gitignore",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2286
+    },
+    {
+      "extension": ".gitattributes",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1556
+    },
+    {
+      "extension": ".dockerignore",
+      "mimeType": "text/plain",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1957
+    },
+    {
+      "extension": ".html",
+      "mimeType": "text/html",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2300
+    },
+    {
+      "extension": ".htm",
+      "mimeType": "text/html",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1865
+    },
+    {
+      "extension": ".md",
+      "mimeType": "text/markdown",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1423
+    },
+    {
+      "extension": ".markdown",
+      "mimeType": "text/markdown",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1591
+    },
+    {
+      "extension": ".mdown",
+      "mimeType": "text/markdown",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1866
+    },
+    {
+      "extension": ".mkd",
+      "mimeType": "text/markdown",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1847
+    },
+    {
+      "extension": ".c",
+      "mimeType": "text/x-c",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1882
+    },
+    {
+      "extension": ".h",
+      "mimeType": "text/x-c",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1975
+    },
+    {
+      "extension": ".java",
+      "mimeType": "text/x-java",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1595
+    },
+    {
+      "extension": ".kt",
+      "mimeType": "text/x-kotlin",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1679
+    },
+    {
+      "extension": ".kts",
+      "mimeType": "text/x-kotlin",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1707
+    },
+    {
+      "extension": ".go",
+      "mimeType": "text/x-go",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1917
+    },
+    {
+      "extension": ".py",
+      "mimeType": "text/x-python",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2150
+    },
+    {
+      "extension": ".pyw",
+      "mimeType": "text/x-python",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1692
+    },
+    {
+      "extension": ".pyx",
+      "mimeType": "text/x-python",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2172
+    },
+    {
+      "extension": ".pyi",
+      "mimeType": "text/x-python",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2077
+    },
+    {
+      "extension": ".pl",
+      "mimeType": "text/x-perl",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2494
+    },
+    {
+      "extension": ".pm",
+      "mimeType": "text/x-perl",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2270
+    },
+    {
+      "extension": ".t",
+      "mimeType": "text/x-perl",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1728
+    },
+    {
+      "extension": ".pod",
+      "mimeType": "text/x-perl",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1917
+    },
+    {
+      "extension": ".lua",
+      "mimeType": "text/x-lua",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2235
+    },
+    {
+      "extension": ".erl",
+      "mimeType": "text/x-erlang",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1946
+    },
+    {
+      "extension": ".hrl",
+      "mimeType": "text/x-erlang",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1697
+    },
+    {
+      "extension": ".tcl",
+      "mimeType": "text/x-tcl",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1428
+    },
+    {
+      "extension": ".bib",
+      "mimeType": "text/x-bibtex",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 2284
+    },
+    {
+      "extension": ".diff",
+      "mimeType": "text/x-diff",
+      "status": "pass",
+      "message": "Upload successful",
+      "duration": 1620
+    }
+  ],
+  "duration": 70174
+}

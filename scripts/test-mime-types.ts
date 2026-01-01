@@ -58,10 +58,10 @@ class MimeTypeValidator {
   private sampleDir: string;
   private startTime: number = 0;
 
-  constructor(apiKey: string, testStoreName: string) {
+  constructor(apiKey: string) {
     this.client = new GoogleGenAI({ apiKey });
     this.uploader = new FileUploader(this.client);
-    this.testStoreName = testStoreName;
+    this.testStoreName = '';
     this.sampleDir = path.join(__dirname, 'sample-files');
   }
 
@@ -91,7 +91,7 @@ class MimeTypeValidator {
       try {
         const storesResponse = await manager.listStores();
         const stores = storesResponse?.fileSearchStores ?? [];
-        const existingStore = stores.find((s: any) => s.displayName === displayName);
+        const existingStore = stores.find((s) => s.displayName === displayName);
 
         if (existingStore?.name) {
           this.testStoreName = existingStore.name;
@@ -225,9 +225,6 @@ class MimeTypeValidator {
     if (ext === '.pdf') {
       // Minimal valid PDF
       content = '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj xref 0 4 trailer<</Size 4/Root 1 0 R>>startxref 0 %%EOF';
-    } else if (ext === '.zip') {
-      // Minimal valid ZIP (empty archive)
-      content = Buffer.from([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
     } else {
       // For text formats, create sample content
       content = `Sample file for ${ext} MIME type testing.\n`;
@@ -268,10 +265,11 @@ class MimeTypeValidator {
     console.log(`${'='.repeat(60)}\n`);
 
     // Summary
+    const pct = (n: number) => report.totalTests > 0 ? ((n / report.totalTests) * 100).toFixed(1) : '0.0';
     console.log('Summary:');
     console.log(`  Total Tests:  ${report.totalTests}`);
-    console.log(`  Passed:       ${report.passed} (${((report.passed / report.totalTests) * 100).toFixed(1)}%)`);
-    console.log(`  Failed:       ${report.failed} (${((report.failed / report.totalTests) * 100).toFixed(1)}%)`);
+    console.log(`  Passed:       ${report.passed} (${pct(report.passed)}%)`);
+    console.log(`  Failed:       ${report.failed} (${pct(report.failed)}%)`);
     if (report.skipped > 0) {
       console.log(`  Skipped:      ${report.skipped}`);
     }
@@ -328,7 +326,7 @@ async function main() {
 
   try {
     // Create validator with a placeholder name (will be set when store is created)
-    const validator = new MimeTypeValidator(apiKey, 'temp');
+    const validator = new MimeTypeValidator(apiKey);
     const report = await validator.validateAllMimeTypes();
 
     // Save report to file
@@ -349,7 +347,7 @@ async function main() {
 
 // Run if executed directly (ESM equivalent of require.main === module)
 const isMainModule = import.meta.url === `file://${process.argv[1]}` ||
-                     process.argv[1]?.endsWith('test-mime-types.ts');
+                     process.argv[1]?.endsWith('/scripts/test-mime-types.ts');
 if (isMainModule) {
   main().catch((error) => {
     console.error('Unhandled error:', error);

@@ -354,7 +354,7 @@ async function main() {
 // Run if executed directly (ESM equivalent of require.main === module)
 const isMainModule = (() => {
   try {
-    const scriptPath = fileURLToPath(import.meta.url);
+    const scriptPath = realpathSync(fileURLToPath(import.meta.url));
     const argPath = process.argv[1] ? realpathSync(process.argv[1]) : '';
     return scriptPath === argPath;
   } catch {

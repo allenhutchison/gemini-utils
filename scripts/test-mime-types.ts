@@ -28,6 +28,7 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { realpathSync } from 'fs';
 
 // ESM equivalents for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -120,8 +121,9 @@ class MimeTypeValidator {
       const manager = new FileSearchManager(this.client);
       await manager.deleteStore(this.testStoreName, true); // force delete
       console.log(`✓ Test store deleted successfully`);
-    } catch (error: any) {
-      console.error(`Warning: Failed to delete test store: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = (error as Error)?.message ?? String(error);
+      console.error(`Warning: Failed to delete test store: ${errorMessage}`);
     }
   }
 
@@ -191,9 +193,9 @@ class MimeTypeValidator {
         message: 'Upload successful',
         duration: Date.now() - testStart,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Sanitize error message to use relative paths
-      const rawMessage = error.message || String(error);
+      const rawMessage = (error as Error)?.message ?? String(error);
       const sanitizedMessage = rawMessage.replace(this.sampleDir, './sample-files');
 
       this.results.push({
@@ -342,7 +344,7 @@ async function main() {
       console.log(`\n⚠ ${report.failed} MIME type(s) failed - see report for details`);
       process.exit(1);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('\nFatal error during validation:');
     console.error(error);
     process.exit(1);
@@ -350,8 +352,15 @@ async function main() {
 }
 
 // Run if executed directly (ESM equivalent of require.main === module)
-const isMainModule = import.meta.url === `file://${process.argv[1]}` ||
-                     process.argv[1]?.endsWith('/scripts/test-mime-types.ts');
+const isMainModule = (() => {
+  try {
+    const scriptPath = fileURLToPath(import.meta.url);
+    const argPath = process.argv[1] ? realpathSync(process.argv[1]) : '';
+    return scriptPath === argPath;
+  } catch {
+    return false;
+  }
+})();
 if (isMainModule) {
   main().catch((error) => {
     console.error('Unhandled error:', error);

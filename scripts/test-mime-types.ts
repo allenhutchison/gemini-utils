@@ -75,7 +75,10 @@ class MimeTypeValidator {
     try {
       console.log(`Creating test file search store...`);
       const store = await manager.createStore(displayName);
-      this.testStoreName = store.name!;
+      if (!store.name) {
+        throw new Error('Store created but no name returned from API');
+      }
+      this.testStoreName = store.name;
       console.log(`✓ Test store created: ${this.testStoreName}\n`);
       return this.testStoreName;
     } catch (error: unknown) {
@@ -132,11 +135,12 @@ class MimeTypeValidator {
     console.log(`\n${'='.repeat(60)}`);
     console.log('MIME Type Validation Suite');
     console.log(`${'='.repeat(60)}\n`);
-    console.log(`Testing ${extensions.length} MIME types against ${this.testStoreName}\n`);
 
     try {
       // Create test store
       await this.createTestStore();
+
+      console.log(`Testing ${extensions.length} MIME types against ${this.testStoreName}\n`);
 
       // Ensure sample directory exists
       if (!fs.existsSync(this.sampleDir)) {
@@ -303,7 +307,7 @@ class MimeTypeValidator {
   async saveReportToFile(filename: string, report?: TestReport): Promise<void> {
     const reportToSave = report ?? this.generateReport(Date.now() - this.startTime);
     const reportJson = JSON.stringify(reportToSave, null, 2);
-    fs.writeFileSync(filename, reportJson);
+    await fs.promises.writeFile(filename, reportJson);
     console.log(`Report saved to: ${filename}`);
   }
 }

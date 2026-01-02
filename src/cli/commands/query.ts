@@ -11,7 +11,7 @@ export function registerQueryCommand(program: Command): void {
   program
     .command('query <store> <query>')
     .description('Query a file search store')
-    .option('-m, --model <model>', 'Model to use', 'gemini-2.0-flash')
+    .option('-m, --model <model>', 'Model to use', 'gemini-2.5-flash')
     .action(async function (
       this: Command,
       storeName: string,

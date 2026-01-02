@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { ResearchManager, ReportGenerator, InteractionOutput } from '../../research/index.js';
 import { output, OutputContext } from '../utils/output.js';
 import { handleError } from '../utils/errors.js';
+import { validatePositiveInteger } from '../utils/validation.js';
 
 /**
  * Writes a markdown report to a file.
@@ -129,15 +130,12 @@ export function registerResearchCommands(program: Command): void {
       const researcher = new ResearchManager(client);
 
       try {
-        // Validate interval
-        const DEFAULT_INTERVAL_MS = 5000;
-        let intervalMs = parseInt(options.interval, 10);
-        if (!Number.isFinite(intervalMs) || intervalMs <= 0) {
-          if (!outputContext.quiet && !outputContext.json) {
-            console.warn(`Invalid interval "${options.interval}", using default ${DEFAULT_INTERVAL_MS}ms`);
-          }
-          intervalMs = DEFAULT_INTERVAL_MS;
-        }
+        const intervalMs = validatePositiveInteger(
+          options.interval,
+          5000,
+          'interval',
+          outputContext
+        );
 
         // Show progress
         if (!outputContext.quiet && !outputContext.json) {

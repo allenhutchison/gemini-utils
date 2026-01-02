@@ -7,6 +7,7 @@ import { FileUploader } from '../../file-search/index.js';
 import { output } from '../utils/output.js';
 import { handleError } from '../utils/errors.js';
 import { createProgressCallback } from '../utils/progress.js';
+import { validatePositiveInteger } from '../utils/validation.js';
 
 export function registerUploadCommands(program: Command): void {
   const upload = program
@@ -45,15 +46,12 @@ export function registerUploadCommands(program: Command): void {
       const { client, outputContext } = this.ctx!;
       const uploader = new FileUploader(client);
 
-      // Validate concurrency
-      const DEFAULT_CONCURRENCY = 5;
-      let concurrency = parseInt(options.concurrency, 10);
-      if (!Number.isFinite(concurrency) || concurrency <= 0) {
-        if (!outputContext.quiet && !outputContext.json) {
-          console.warn(`Invalid concurrency "${options.concurrency}", using default ${DEFAULT_CONCURRENCY}`);
-        }
-        concurrency = DEFAULT_CONCURRENCY;
-      }
+      const concurrency = validatePositiveInteger(
+        options.concurrency,
+        5,
+        'concurrency',
+        outputContext
+      );
 
       const progressCallback = createProgressCallback({
         showProgress: options.progress,

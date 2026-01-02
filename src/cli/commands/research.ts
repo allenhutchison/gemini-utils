@@ -4,9 +4,25 @@
 
 import { Command } from 'commander';
 import * as fs from 'fs';
-import { ResearchManager, ReportGenerator } from '../../research/index.js';
-import { output } from '../utils/output.js';
+import { ResearchManager, ReportGenerator, InteractionOutput } from '../../research/index.js';
+import { output, OutputContext } from '../utils/output.js';
 import { handleError } from '../utils/errors.js';
+
+/**
+ * Writes a markdown report to a file.
+ */
+async function writeReport(
+  outputPath: string,
+  outputs: InteractionOutput[],
+  outputContext: OutputContext
+): Promise<void> {
+  const generator = new ReportGenerator();
+  const markdown = generator.generateMarkdown(outputs);
+  await fs.promises.writeFile(outputPath, markdown);
+  if (!outputContext.quiet && !outputContext.json) {
+    console.log(`Report saved to: ${outputPath}`);
+  }
+}
 
 export function registerResearchCommands(program: Command): void {
   const research = program
@@ -55,12 +71,7 @@ export function registerResearchCommands(program: Command): void {
 
         // Generate report if output file specified
         if (options.output && completed.outputs) {
-          const generator = new ReportGenerator();
-          const markdown = generator.generateMarkdown(completed.outputs);
-          await fs.promises.writeFile(options.output, markdown);
-          if (!outputContext.quiet && !outputContext.json) {
-            console.log(`Report saved to: ${options.output}`);
-          }
+          await writeReport(options.output, completed.outputs, outputContext);
         }
 
         output(outputContext, completed, () => {
@@ -118,22 +129,26 @@ export function registerResearchCommands(program: Command): void {
       const researcher = new ResearchManager(client);
 
       try {
+        // Validate interval
+        const DEFAULT_INTERVAL_MS = 5000;
+        let intervalMs = parseInt(options.interval, 10);
+        if (!Number.isFinite(intervalMs) || intervalMs <= 0) {
+          if (!outputContext.quiet && !outputContext.json) {
+            console.warn(`Invalid interval "${options.interval}", using default ${DEFAULT_INTERVAL_MS}ms`);
+          }
+          intervalMs = DEFAULT_INTERVAL_MS;
+        }
+
         // Show progress
         if (!outputContext.quiet && !outputContext.json) {
           console.log('Polling for completion...');
         }
 
-        const intervalMs = parseInt(options.interval, 10);
         const completed = await researcher.poll(id, intervalMs);
 
         // Generate report if output file specified
         if (options.output && completed.outputs) {
-          const generator = new ReportGenerator();
-          const markdown = generator.generateMarkdown(completed.outputs);
-          await fs.promises.writeFile(options.output, markdown);
-          if (!outputContext.quiet && !outputContext.json) {
-            console.log(`Report saved to: ${options.output}`);
-          }
+          await writeReport(options.output, completed.outputs, outputContext);
         }
 
         output(outputContext, completed, () => {

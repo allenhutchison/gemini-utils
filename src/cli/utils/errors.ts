@@ -19,15 +19,16 @@ export enum ExitCode {
  */
 export function handleError(ctx: OutputContext, err: unknown): never {
   const message = err instanceof Error ? err.message : String(err);
+  const lowerMessage = message.toLowerCase();
 
   let code = ExitCode.GENERAL_ERROR;
 
-  // Detect specific error types
-  if (message.includes('not found') || message.includes('NOT_FOUND')) {
+  // Detect specific error types (case-insensitive)
+  if (lowerMessage.includes('not found') || lowerMessage.includes('not_found')) {
     code = ExitCode.NOT_FOUND;
-  } else if (message.includes('INVALID_ARGUMENT')) {
+  } else if (lowerMessage.includes('invalid_argument')) {
     code = ExitCode.MISSING_ARGUMENT;
-  } else if (message.includes('PERMISSION_DENIED') || message.includes('UNAUTHENTICATED')) {
+  } else if (lowerMessage.includes('permission_denied') || lowerMessage.includes('unauthenticated')) {
     code = ExitCode.API_ERROR;
   }
 

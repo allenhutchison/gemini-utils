@@ -37,15 +37,19 @@ export function createProgressCallback(options: ProgressOptions): ((event: Uploa
         process.stdout.write(lastLine);
         break;
 
-      case 'file_complete':
-        lastLine = `[${event.completedFiles}/${event.totalFiles}] Uploaded: ${event.currentFile}`;
+      case 'file_complete': {
+        const processed = (event.completedFiles ?? 0) + (event.skippedFiles ?? 0);
+        lastLine = `[${processed}/${event.totalFiles}] Uploaded: ${event.currentFile}`;
         process.stdout.write(lastLine);
         break;
+      }
 
-      case 'file_skipped':
-        lastLine = `[${event.completedFiles}/${event.totalFiles}] Skipped: ${event.currentFile}`;
+      case 'file_skipped': {
+        const processed = (event.completedFiles ?? 0) + (event.skippedFiles ?? 0);
+        lastLine = `[${processed}/${event.totalFiles}] Skipped: ${event.currentFile}`;
         process.stdout.write(lastLine);
         break;
+      }
 
       case 'file_error':
         // Print error on new line

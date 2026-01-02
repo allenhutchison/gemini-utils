@@ -7,6 +7,7 @@
 
 import { Command } from 'commander';
 import { GoogleGenAI } from '@google/genai';
+import { createRequire } from 'module';
 import { createClient } from './utils/client.js';
 import { OutputContext } from './utils/output.js';
 import { registerStoresCommands } from './commands/stores.js';
@@ -15,8 +16,10 @@ import { registerDocumentsCommands } from './commands/documents.js';
 import { registerResearchCommands } from './commands/research.js';
 import { registerQueryCommand } from './commands/query.js';
 
-// Read version from package.json at build time
-const VERSION = '0.3.0';
+// Read version from package.json (single source of truth)
+const require = createRequire(import.meta.url);
+const packageJson = require('../../package.json') as { version: string };
+const VERSION = packageJson.version;
 
 /**
  * Context passed to all commands via the command object.

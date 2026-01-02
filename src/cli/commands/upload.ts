@@ -45,6 +45,16 @@ export function registerUploadCommands(program: Command): void {
       const { client, outputContext } = this.ctx!;
       const uploader = new FileUploader(client);
 
+      // Validate concurrency
+      const DEFAULT_CONCURRENCY = 5;
+      let concurrency = parseInt(options.concurrency, 10);
+      if (!Number.isFinite(concurrency) || concurrency <= 0) {
+        if (!outputContext.quiet && !outputContext.json) {
+          console.warn(`Invalid concurrency "${options.concurrency}", using default ${DEFAULT_CONCURRENCY}`);
+        }
+        concurrency = DEFAULT_CONCURRENCY;
+      }
+
       const progressCallback = createProgressCallback({
         showProgress: options.progress,
         quiet: outputContext.quiet,
@@ -53,7 +63,7 @@ export function registerUploadCommands(program: Command): void {
       try {
         const results = await uploader.uploadDirectory(dirPath, storeName, {
           smartSync: options.smartSync,
-          parallel: { maxConcurrent: parseInt(options.concurrency, 10) },
+          parallel: { maxConcurrent: concurrency },
           onProgress: progressCallback,
         });
 

@@ -11,6 +11,13 @@ const CONFIG_DIR_NAME = 'gemini-utils';
 const CONFIG_FILE_NAME = 'config.json';
 const ENV_FILE_NAME = '.env';
 
+/**
+ * Returns true if debug logging is enabled.
+ */
+function isDebugEnabled(): boolean {
+  return process.env.GEMINI_DEBUG === '1' || process.env.GEMINI_DEBUG === 'true';
+}
+
 export interface Config {
   apiKey?: string;
 }
@@ -89,10 +96,13 @@ export function loadConfig(): Config {
       const parsed = JSON.parse(content);
       if (parsed.apiKey) {
         config.apiKey = parsed.apiKey;
+        return config;
       }
-      return config;
-    } catch {
-      // Ignore parse errors, try .env next
+      // No apiKey in config.json, continue to try .env
+    } catch (err) {
+      if (isDebugEnabled()) {
+        console.error(`[debug] Failed to parse config.json: ${err}`);
+      }
     }
   }
 
@@ -105,8 +115,10 @@ export function loadConfig(): Config {
       if (parsed.GEMINI_API_KEY) {
         config.apiKey = parsed.GEMINI_API_KEY;
       }
-    } catch {
-      // Ignore read errors
+    } catch (err) {
+      if (isDebugEnabled()) {
+        console.error(`[debug] Failed to read .env file: ${err}`);
+      }
     }
   }
 

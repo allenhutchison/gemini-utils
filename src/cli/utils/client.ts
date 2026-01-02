@@ -4,8 +4,9 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { getApiKeyFromConfig, getConfigDir } from './config.js';
+import { ExitCode } from './errors.js';
 
-export const EXIT_CODE_NO_API_KEY = 3;
+export const EXIT_CODE_NO_API_KEY = ExitCode.NO_API_KEY;
 
 /**
  * Creates a GoogleGenAI client from the provided API key, environment variable, or config file.

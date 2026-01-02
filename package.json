@@ -38,7 +38,11 @@
   "peerDependencies": {
     "@google/genai": ">=1.29.0"
   },
+  "bin": {
+    "gemini-utils": "./dist/cli/main.js"
+  },
   "dependencies": {
+    "commander": "^14.0.0",
     "ignore": "^7.0.5"
   },
   "devDependencies": {

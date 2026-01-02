@@ -5,8 +5,8 @@
 import { Command } from 'commander';
 import * as fs from 'fs';
 import { ResearchManager, ReportGenerator, InteractionOutput } from '../../research/index.js';
-import { output, OutputContext } from '../utils/output.js';
-import { handleError } from '../utils/errors.js';
+import { output, OutputContext, outputError } from '../utils/output.js';
+import { handleError, ExitCode } from '../utils/errors.js';
 import { validatePositiveInteger } from '../utils/validation.js';
 
 /**
@@ -45,6 +45,15 @@ export function registerResearchCommands(program: Command): void {
     ) {
       const { client, outputContext } = this.ctx!;
       const researcher = new ResearchManager(client);
+
+      // Validate that --output requires --wait
+      if (options.output && !options.wait) {
+        outputError(
+          outputContext,
+          '--output requires --wait flag to be set',
+          ExitCode.MISSING_ARGUMENT
+        );
+      }
 
       try {
         const fileSearchStoreNames = options.stores?.split(',').map((s) => s.trim());

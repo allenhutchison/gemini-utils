@@ -17,6 +17,131 @@ npm install @allenhutchison/gemini-utils @google/genai
 - **Operation Management**: Track long-running upload operations with customizable storage
 - **Deep Research**: Run long-running research tasks with Gemini's deep research models
 - **Report Generation**: Convert research outputs to formatted Markdown with citations
+- **CLI**: Full-featured command-line interface for all operations
+
+## CLI
+
+Run commands directly with npx:
+
+```bash
+npx @allenhutchison/gemini-utils [command] [options]
+```
+
+### Global Options
+
+```
+-j, --json         Output in JSON format
+-q, --quiet        Suppress non-essential output
+--api-key <key>    API key (overrides GEMINI_API_KEY env var)
+-v, --version      Show version number
+-h, --help         Show help
+```
+
+### Configuration
+
+The CLI looks for an API key in this order:
+1. `--api-key` command line option
+2. `GEMINI_API_KEY` environment variable
+3. Config file at `~/.config/gemini-utils/config.json`:
+   ```json
+   { "apiKey": "your-api-key" }
+   ```
+4. Env file at `~/.config/gemini-utils/.env`:
+   ```
+   GEMINI_API_KEY=your-api-key
+   ```
+
+### Commands
+
+#### Stores
+
+```bash
+# List all stores
+npx @allenhutchison/gemini-utils stores list
+
+# Create a new store
+npx @allenhutchison/gemini-utils stores create "My Documents"
+
+# Get store details
+npx @allenhutchison/gemini-utils stores get stores/abc123
+
+# Delete a store
+npx @allenhutchison/gemini-utils stores delete stores/abc123
+npx @allenhutchison/gemini-utils stores delete stores/abc123 --force
+```
+
+#### Upload
+
+```bash
+# Upload a single file
+npx @allenhutchison/gemini-utils upload file ./document.pdf stores/abc123
+
+# Upload a directory
+npx @allenhutchison/gemini-utils upload directory ./docs stores/abc123
+
+# Upload with smart sync (skip unchanged files)
+npx @allenhutchison/gemini-utils upload directory ./docs stores/abc123 --smart-sync
+
+# Control concurrency
+npx @allenhutchison/gemini-utils upload directory ./docs stores/abc123 -c 10
+```
+
+#### Documents
+
+```bash
+# List documents in a store
+npx @allenhutchison/gemini-utils documents list stores/abc123
+
+# Get document details
+npx @allenhutchison/gemini-utils documents get stores/abc123/documents/xyz789
+
+# Delete a document
+npx @allenhutchison/gemini-utils documents delete stores/abc123/documents/xyz789
+```
+
+#### Research
+
+```bash
+# Start research and get ID
+npx @allenhutchison/gemini-utils research start "What is quantum computing?"
+
+# Start and wait for completion
+npx @allenhutchison/gemini-utils research start "What is quantum computing?" --wait
+
+# Start, wait, and save report to file
+npx @allenhutchison/gemini-utils research start "What is quantum computing?" --wait --output report.md
+
+# Use file search stores for grounding
+npx @allenhutchison/gemini-utils research start "Summarize the documents" --stores stores/abc123,stores/def456 --wait
+
+# Check status
+npx @allenhutchison/gemini-utils research status interactions/abc123
+
+# Poll until complete
+npx @allenhutchison/gemini-utils research poll interactions/abc123 --output report.md
+
+# Cancel or delete
+npx @allenhutchison/gemini-utils research cancel interactions/abc123
+npx @allenhutchison/gemini-utils research delete interactions/abc123
+```
+
+#### Query
+
+```bash
+# Query a store
+npx @allenhutchison/gemini-utils query stores/abc123 "What does the documentation say about authentication?"
+
+# Use a specific model
+npx @allenhutchison/gemini-utils query stores/abc123 "Summarize the main points" --model gemini-2.0-flash
+```
+
+### JSON Output
+
+Use `--json` for machine-readable output:
+
+```bash
+npx @allenhutchison/gemini-utils stores list --json | jq '.[] | .name'
+```
 
 ## Usage
 

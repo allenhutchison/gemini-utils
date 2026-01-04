@@ -121,7 +121,7 @@ describe('FileSearchManager', () => {
 
       expect(mockClient.fileSearchStores.documents.list).toHaveBeenCalledWith({
         parent: 'stores/store1',
-        config: { pageSize: 100 },
+        config: { pageSize: 20 },
       });
       expect(result).toHaveLength(2);
       expect(result[0].name).toBe('documents/1');

@@ -101,7 +101,7 @@ export class FileSearchManager {
     const allDocuments: FileSearchDocument[] = [];
     const pager = await this.client.fileSearchStores.documents.list({
       parent: storeName,
-      config: { pageSize: 100 },
+      config: { pageSize: 20 },
     });
 
     // Iterate through all pages

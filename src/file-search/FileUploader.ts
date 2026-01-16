@@ -165,7 +165,7 @@ export class FileUploader {
       if (content.data instanceof Blob) {
         fileData = content.data;
       } else if (Buffer.isBuffer(content.data)) {
-        fileData = new Blob([content.data], { type: content.mimeType });
+        fileData = new Blob([new Uint8Array(content.data)], { type: content.mimeType });
       } else {
         // String path - pass directly
         fileData = content.data;

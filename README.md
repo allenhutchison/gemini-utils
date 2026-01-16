@@ -1,6 +1,6 @@
 # @allenhutchison/gemini-utils
 
-Shared utilities for Google Gemini AI projects. Provides file upload, MIME validation, operation tracking for the Gemini File Search API, and deep research capabilities.
+Shared utilities for Google Gemini AI projects. Provides file upload, MIME validation, operation tracking for the Gemini File Search API, deep research capabilities, and audio transcription.
 
 ## Installation
 
@@ -17,6 +17,7 @@ npm install @allenhutchison/gemini-utils @google/genai
 - **Operation Management**: Track long-running upload operations with customizable storage
 - **Deep Research**: Run long-running research tasks with Gemini's deep research models
 - **Report Generation**: Convert research outputs to formatted Markdown with citations
+- **Audio Transcription**: Transcribe audio files with timestamps, speaker diarization, and multiple output formats (text, SRT, VTT, JSON)
 - **CLI**: Full-featured command-line interface for all operations
 
 ## CLI
@@ -133,6 +134,45 @@ npx @allenhutchison/gemini-utils query stores/abc123 "What does the documentatio
 
 # Use a specific model
 npx @allenhutchison/gemini-utils query stores/abc123 "Summarize the main points" --model gemini-2.0-flash
+```
+
+#### Transcribe
+
+```bash
+# Basic transcription
+npx @allenhutchison/gemini-utils transcribe file recording.mp3
+
+# Save transcript to file
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -o transcript.txt
+
+# Transcribe with timestamps
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -t -o transcript.txt
+
+# Generate SRT subtitles
+npx @allenhutchison/gemini-utils transcribe file video.mp3 -t -f srt -o subtitles.srt
+
+# Generate WebVTT subtitles
+npx @allenhutchison/gemini-utils transcribe file video.mp3 -t -f vtt -o subtitles.vtt
+
+# Enable speaker diarization (identifies different speakers)
+npx @allenhutchison/gemini-utils transcribe file meeting.wav -d -t -o meeting.txt
+
+# Specify language hint
+npx @allenhutchison/gemini-utils transcribe file spanish-audio.mp3 -l es -o transcript.txt
+
+# Use a different model
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -m gemini-3-pro
+
+# Upload transcript to a file search store
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -s stores/abc123
+
+# Output formats: text (default), timestamped, srt, vtt, json
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -t -f json -o transcript.json
+
+# Manage large audio files (> 20MB)
+npx @allenhutchison/gemini-utils transcribe upload large-audio.mp3
+npx @allenhutchison/gemini-utils transcribe list
+npx @allenhutchison/gemini-utils transcribe delete files/abc123
 ```
 
 ### JSON Output
@@ -267,6 +307,64 @@ if (status.status === 'completed') {
 }
 ```
 
+### Audio Transcription
+
+```typescript
+import { GoogleGenAI } from '@google/genai';
+import { TranscriptionManager, TranscriptFormatter } from '@allenhutchison/gemini-utils';
+
+const client = new GoogleGenAI({ apiKey: 'your-api-key' });
+const transcriber = new TranscriptionManager(client);
+
+// Basic transcription
+const result = await transcriber.transcribe({
+  audioSource: './recording.mp3',
+});
+console.log(result.text);
+
+// Transcription with timestamps and speaker diarization
+const detailed = await transcriber.transcribe({
+  audioSource: './meeting.wav',
+  timestamps: true,
+  diarization: true,
+  language: 'en',
+  model: 'gemini-3-flash',
+});
+
+// Access timestamped segments
+for (const segment of detailed.segments ?? []) {
+  console.log(`[${segment.startTime}s] ${segment.speaker}: ${segment.text}`);
+}
+
+// Format output in different formats
+const formatter = new TranscriptFormatter();
+const srt = formatter.toSRT(detailed);      // SRT subtitles
+const vtt = formatter.toVTT(detailed);      // WebVTT subtitles
+const json = formatter.toJSON(detailed);    // Structured JSON
+```
+
+### Large Audio File Upload
+
+```typescript
+import { TranscriptionManager } from '@allenhutchison/gemini-utils';
+
+const transcriber = new TranscriptionManager(client);
+
+// Upload large files (> 20MB) to Gemini File API first
+const metadata = await transcriber.uploadAudioFile('./large-audio.mp3');
+console.log(`Uploaded: ${metadata.uri}`);
+
+// Then transcribe using the URI
+const result = await transcriber.transcribe({
+  audioSource: metadata.uri,
+  timestamps: true,
+});
+
+// List and manage uploaded audio files
+const files = await transcriber.listAudioFiles();
+await transcriber.deleteAudioFile(files[0].name);
+```
+
 ## API Reference
 
 ### FileSearchManager
@@ -315,6 +413,36 @@ Converts research outputs to formatted documents.
 
 - `generateMarkdown(outputs)` - Generate markdown report with citations
 
+### TranscriptionManager
+
+Manages audio transcription interactions with the Gemini API.
+
+- `transcribe(params, onProgress?)` - Transcribe an audio file
+- `uploadAudioFile(filePath)` - Upload large audio files to Gemini File API
+- `listAudioFiles()` - List uploaded audio files
+- `deleteAudioFile(name)` - Delete an uploaded audio file
+- `getStatus(id)` - Get transcription interaction status
+- `poll(id, intervalMs?)` - Poll until transcription completes (default: 2s interval)
+
+### TranscriptFormatter
+
+Converts transcription results to various output formats.
+
+- `format(result, format)` - Format result to specified format
+- `toPlainText(result)` - Plain text output
+- `toTimestampedText(result)` - Text with timestamps `[00:00:05] Hello...`
+- `toSRT(result)` - SRT subtitle format
+- `toVTT(result)` - WebVTT subtitle format
+- `toJSON(result)` - Structured JSON output
+
+### Transcription Types
+
+- `TranscribeParams` - Configuration for transcription (audioSource, language, model, timestamps, diarization)
+- `TranscriptionResult` - Result with text, segments, duration, and metadata
+- `TranscriptSegment` - Timestamped segment with startTime, endTime, text, speaker
+- `TranscriptFormat` - Output formats: `text`, `timestamped`, `srt`, `vtt`, `json`
+- `AudioFormat` - Supported formats: `mp3`, `wav`, `flac`, `aac`, `ogg`, `m4a`, `webm`
+
 ### Research Types
 
 - `StartResearchParams` - Configuration for starting research
@@ -328,6 +456,8 @@ Converts research outputs to formatted documents.
 - `UnsupportedFileTypeError` - Thrown for unsupported file types
 - `FileSizeExceededError` - Thrown when file exceeds 100MB limit
 - `FileUploadError` - Wrapper for upload failures
+- `UnsupportedAudioTypeError` - Thrown for unsupported audio file types
+- `AudioFileSizeExceededError` - Thrown when audio file exceeds 2GB limit
 
 ## Supported File Types
 
@@ -336,6 +466,22 @@ The library supports 36 validated MIME types plus 100+ text file extensions via 
 **Validated types**: PDF, XML, HTML, Markdown, C, Java, Python, Go, Kotlin, Perl, Lua, Erlang, TCL, BibTeX, diff
 
 **Fallback (as text/plain)**: JavaScript, TypeScript, JSON, CSS, SCSS, YAML, TOML, Shell scripts, Ruby, PHP, Rust, Swift, Scala, and many more.
+
+## Supported Audio Formats
+
+For audio transcription, the following formats are supported:
+
+- **MP3** (`audio/mpeg`)
+- **WAV** (`audio/wav`)
+- **FLAC** (`audio/flac`)
+- **AAC** (`audio/aac`)
+- **OGG** (`audio/ogg`)
+- **M4A** (`audio/mp4`)
+- **WebM** (`audio/webm`)
+
+**File size limits:**
+- Files ≤ 20MB: Uploaded inline (base64)
+- Files > 20MB: Uploaded via Gemini File API (max 2GB)
 
 ## License
 

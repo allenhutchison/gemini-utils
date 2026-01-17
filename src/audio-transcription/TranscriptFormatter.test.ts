@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { TranscriptFormatter, hasSegments } from './TranscriptFormatter.js';
 import { TranscriptionResult } from './types.js';
 

@@ -4,6 +4,7 @@
 
 import { Command } from 'commander';
 import * as fs from 'fs';
+import * as path from 'path';
 import {
   TranscriptionManager,
   TranscriptFormatter,
@@ -106,11 +107,13 @@ export function registerTranscribeCommands(program: Command): void {
           `Invalid format: ${options.format}. Valid formats: ${VALID_FORMATS.join(', ')}`,
           ExitCode.MISSING_ARGUMENT
         );
+        return;
       }
 
       // Validate file exists
       if (!fs.existsSync(audioFile)) {
         outputError(outputContext, `File not found: ${audioFile}`, ExitCode.NOT_FOUND);
+        return;
       }
 
       const transcriber = new TranscriptionManager(client);
@@ -149,8 +152,8 @@ export function registerTranscribeCommands(program: Command): void {
         // Upload to store if specified
         if (options.store) {
           const fileName = options.output
-            ? options.output.split('/').pop()!
-            : `${audioFile.split('/').pop()}.transcript.txt`;
+            ? path.basename(options.output)
+            : `${path.basename(audioFile)}.transcript.txt`;
           await uploadToStore(options.store, result, format, fileName, this);
         }
 
@@ -194,6 +197,7 @@ export function registerTranscribeCommands(program: Command): void {
       // Validate file exists
       if (!fs.existsSync(audioFile)) {
         outputError(outputContext, `File not found: ${audioFile}`, ExitCode.NOT_FOUND);
+        return;
       }
 
       const transcriber = new TranscriptionManager(client);

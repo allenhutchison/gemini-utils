@@ -18,11 +18,13 @@ import {
   requireAudioMimeType,
   shouldUseFileApi,
   validateAudioFileSize,
+  getAudioMimeType,
 } from './audioMimeTypes.js';
 import { buildTranscriptionPrompt } from './prompts.js';
 
 const DEFAULT_MODEL = 'gemini-3-flash';
 const DEFAULT_POLL_INTERVAL_MS = 2000;
+const DEFAULT_POLL_TIMEOUT_MS = 600000; // 10 minutes
 
 /**
  * Interaction response from the Gemini API.
@@ -72,8 +74,8 @@ export class TranscriptionManager {
     const { audioSource, model = DEFAULT_MODEL } = params;
     const startTime = Date.now();
 
-    // Check if audioSource is a file URI (already uploaded)
-    const isUri = audioSource.startsWith('https://');
+    // Check if audioSource is a URI (already uploaded or remote)
+    const isUri = /^(https?|file):\/\//i.test(audioSource);
 
     let fileUri: string;
     let mimeType: string;
@@ -81,10 +83,15 @@ export class TranscriptionManager {
     let uploadedViaFileApi = false;
 
     if (isUri) {
-      // Already uploaded, use directly
+      // Already uploaded or remote URI, use directly
       fileUri = audioSource;
-      // Try to determine mime type from URI, default to audio/mpeg
-      mimeType = 'audio/mpeg';
+
+      // Try to determine MIME type from URI path
+      // Extract path from URI, removing query string and fragment
+      const urlPath = audioSource.replace(/[?#].*$/, '');
+      const detectedMimeType = getAudioMimeType(urlPath);
+      // Use detected MIME type or fall back to audio/mpeg as a safe default
+      mimeType = detectedMimeType || 'audio/mpeg';
     } else {
       // Local file path - validate and prepare for upload
       const filePath = audioSource;
@@ -383,15 +390,28 @@ export class TranscriptionManager {
    *
    * @param id - The interaction ID
    * @param intervalMs - Poll interval in milliseconds (default: 2000)
+   * @param timeoutMs - Maximum time to poll in milliseconds (default: 600000 = 10 minutes)
    * @returns The completed, failed, or cancelled interaction
+   * @throws Error if polling times out
    */
-  async poll(id: string, intervalMs: number = DEFAULT_POLL_INTERVAL_MS): Promise<InteractionResponse> {
+  async poll(
+    id: string,
+    intervalMs: number = DEFAULT_POLL_INTERVAL_MS,
+    timeoutMs: number = DEFAULT_POLL_TIMEOUT_MS
+  ): Promise<InteractionResponse> {
+    const startTime = Date.now();
+
     while (true) {
       const interaction = await this.getStatus(id);
       const status = interaction.status as TranscriptionStatus;
 
       if (TRANSCRIPTION_TERMINAL_STATUSES.includes(status)) {
         return interaction;
+      }
+
+      const elapsedMs = Date.now() - startTime;
+      if (elapsedMs >= timeoutMs) {
+        throw new Error(`Transcription poll timeout for id ${id} after ${Math.round(elapsedMs / 1000)}s`);
       }
 
       await new Promise((resolve) => setTimeout(resolve, intervalMs));

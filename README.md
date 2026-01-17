@@ -161,7 +161,7 @@ npx @allenhutchison/gemini-utils transcribe file meeting.wav -d -t -o meeting.tx
 npx @allenhutchison/gemini-utils transcribe file spanish-audio.mp3 -l es -o transcript.txt
 
 # Use a different model
-npx @allenhutchison/gemini-utils transcribe file recording.mp3 -m gemini-3-pro
+npx @allenhutchison/gemini-utils transcribe file recording.mp3 -m gemini-3-pro-preview
 
 # Upload transcript to a file search store
 npx @allenhutchison/gemini-utils transcribe file recording.mp3 -s stores/abc123
@@ -328,7 +328,7 @@ const detailed = await transcriber.transcribe({
   timestamps: true,
   diarization: true,
   language: 'en',
-  model: 'gemini-3-flash',
+  model: 'gemini-3-flash-preview',
 });
 
 // Access timestamped segments

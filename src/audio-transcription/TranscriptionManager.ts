@@ -22,12 +22,26 @@ import {
 } from './audioMimeTypes.js';
 import { buildTranscriptionPrompt } from './prompts.js';
 
-const DEFAULT_MODEL = 'gemini-3-flash';
+const DEFAULT_MODEL = 'gemini-3-flash-preview';
 const DEFAULT_POLL_INTERVAL_MS = 2000;
 const DEFAULT_POLL_TIMEOUT_MS = 600000; // 10 minutes
 
 /**
- * Interaction response from the Gemini API.
+ * Response from generateContent API.
+ */
+interface GenerateContentResponse {
+  text?: string;
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{
+        text?: string;
+      }>;
+    };
+  }>;
+}
+
+/**
+ * Interaction response from the Gemini API (for polling uploaded files).
  */
 interface InteractionResponse {
   id?: string;
@@ -172,35 +186,31 @@ export class TranscriptionManager {
     model: string,
     onProgress?: TranscriptionProgressCallback
   ): Promise<TranscriptionResult> {
-    // Use type assertion for input array format (SDK types are incomplete for multimodal content)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const interaction = await (this.client.interactions.create as any)({
-      model,
-      input: [
-        {
-          file_data: {
-            file_uri: fileUri,
-            mime_type: mimeType,
-          },
-        },
-        { text: prompt },
-      ],
-      background: true,
-    }) as InteractionResponse;
-
-    if (!interaction.id) {
-      throw new Error('Failed to create transcription interaction: no interaction ID returned');
-    }
-
     onProgress?.({
       type: 'transcription_progress',
-      message: `Transcription started (ID: ${interaction.id})`,
-      interactionId: interaction.id,
+      message: 'Processing audio...',
     });
 
-    // Poll for completion
-    const completed = await this.poll(interaction.id);
-    return this.parseTranscriptionResponse(completed, model);
+    // Use generateContent API for multimodal input
+    const response = await this.client.models.generateContent({
+      model,
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              fileData: {
+                fileUri: fileUri,
+                mimeType: mimeType,
+              },
+            },
+            { text: prompt },
+          ],
+        },
+      ],
+    }) as GenerateContentResponse;
+
+    return this.parseGenerateContentResponse(response, model);
   }
 
   /**
@@ -217,56 +227,61 @@ export class TranscriptionManager {
     const fileBuffer = fs.readFileSync(filePath);
     const base64Data = fileBuffer.toString('base64');
 
-    // Use type assertion for input array format (SDK types are incomplete for multimodal content)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const interaction = await (this.client.interactions.create as any)({
-      model,
-      input: [
-        {
-          inline_data: {
-            data: base64Data,
-            mime_type: mimeType,
-          },
-        },
-        { text: prompt },
-      ],
-      background: true,
-    }) as InteractionResponse;
-
-    if (!interaction.id) {
-      throw new Error('Failed to create transcription interaction: no interaction ID returned');
-    }
-
     onProgress?.({
       type: 'transcription_progress',
-      message: `Transcription started (ID: ${interaction.id})`,
-      interactionId: interaction.id,
+      message: 'Processing audio...',
     });
 
-    // Poll for completion
-    const completed = await this.poll(interaction.id);
-    return this.parseTranscriptionResponse(completed, model);
+    // Use generateContent API for multimodal input
+    const response = await this.client.models.generateContent({
+      model,
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              inlineData: {
+                data: base64Data,
+                mimeType: mimeType,
+              },
+            },
+            { text: prompt },
+          ],
+        },
+      ],
+    }) as GenerateContentResponse;
+
+    return this.parseGenerateContentResponse(response, model);
   }
 
   /**
-   * Parses the transcription response from the API.
+   * Parses the generateContent response.
    */
-  private parseTranscriptionResponse(
-    interaction: InteractionResponse,
+  private parseGenerateContentResponse(
+    response: GenerateContentResponse,
     model: string
   ): TranscriptionResult {
-    if (interaction.status === 'failed') {
-      throw new Error(`Transcription failed: ${interaction.error?.message || 'Unknown error'}`);
+    // Extract text from response - try direct text property first, then candidates
+    let rawText = response.text || '';
+    if (!rawText && response.candidates?.[0]?.content?.parts) {
+      rawText = response.candidates[0].content.parts
+        .filter(p => p.text)
+        .map(p => p.text!)
+        .join('\n');
+    }
+    rawText = rawText.trim();
+
+    if (!rawText) {
+      throw new Error('Transcription failed: no text in response');
     }
 
-    if (interaction.status === 'cancelled') {
-      throw new Error('Transcription was cancelled');
-    }
+    return this.parseRawTranscription(rawText, model);
+  }
 
-    // Extract text from outputs
-    const textOutputs = interaction.outputs?.filter(o => o.type === 'text') || [];
-    const rawText = textOutputs.map(o => o.text || '').join('\n').trim();
-
+  /**
+   * Parses raw transcription text, handling JSON for timestamped output.
+   */
+  private parseRawTranscription(rawText: string, model: string): TranscriptionResult {
     // Try to parse as JSON for timestamped/diarized output
     let segments: TranscriptSegment[] | undefined;
     let duration: number | undefined;

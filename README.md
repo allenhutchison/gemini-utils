@@ -346,8 +346,10 @@ const json = formatter.toJSON(detailed);    // Structured JSON
 ### Large Audio File Upload
 
 ```typescript
+import { GoogleGenAI } from '@google/genai';
 import { TranscriptionManager } from '@allenhutchison/gemini-utils';
 
+const client = new GoogleGenAI({ apiKey: 'your-api-key' });
 const transcriber = new TranscriptionManager(client);
 
 // Upload large files (> 20MB) to Gemini File API first

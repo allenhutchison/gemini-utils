@@ -5,6 +5,7 @@
 import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import {
   TranscribeParams,
   TranscriptionResult,
@@ -88,16 +89,19 @@ export class TranscriptionManager {
     const { audioSource, model = DEFAULT_MODEL } = params;
     const startTime = Date.now();
 
-    // Check if audioSource is a URI (already uploaded or remote)
-    const isUri = /^(https?|file):\/\//i.test(audioSource);
+    // Check if audioSource is a remote URI (http:// or https://)
+    // Note: file:// URIs are converted to local paths for proper validation
+    const isRemoteUri = /^https?:\/\//i.test(audioSource);
+    const isFileUri = /^file:\/\//i.test(audioSource);
 
     let fileUri: string;
     let mimeType: string;
     let fileSize: number | undefined;
     let uploadedViaFileApi = false;
+    let localFilePath: string | undefined;
 
-    if (isUri) {
-      // Already uploaded or remote URI, use directly
+    if (isRemoteUri) {
+      // Remote URI (http/https) - use directly without local validation
       fileUri = audioSource;
 
       // Try to determine MIME type from URI path
@@ -107,14 +111,15 @@ export class TranscriptionManager {
       // Use detected MIME type or fall back to audio/mpeg as a safe default
       mimeType = detectedMimeType || 'audio/mpeg';
     } else {
-      // Local file path - validate and prepare for upload
-      const filePath = audioSource;
+      // Local file path or file:// URI - validate and prepare for upload
+      // Convert file:// URI to local path if needed
+      localFilePath = isFileUri ? fileURLToPath(audioSource) : audioSource;
 
       // Validate the audio file
-      mimeType = requireAudioMimeType(filePath);
-      const stats = fs.statSync(filePath);
+      mimeType = requireAudioMimeType(localFilePath);
+      const stats = fs.statSync(localFilePath);
       fileSize = stats.size;
-      validateAudioFileSize(filePath, fileSize);
+      validateAudioFileSize(localFilePath, fileSize);
 
       if (shouldUseFileApi(fileSize)) {
         // Upload via File API for large files
@@ -123,7 +128,7 @@ export class TranscriptionManager {
           message: 'Uploading large audio file...',
         });
 
-        const uploadResult = await this.uploadAudioFile(filePath);
+        const uploadResult = await this.uploadAudioFile(localFilePath);
         fileUri = uploadResult.uri;
         uploadedViaFileApi = true;
 
@@ -133,7 +138,7 @@ export class TranscriptionManager {
         });
       } else {
         // For small files, we'll use inline data
-        fileUri = filePath;
+        fileUri = localFilePath;
       }
     }
 
@@ -148,19 +153,19 @@ export class TranscriptionManager {
     // Create the interaction with audio input
     let response: TranscriptionResult;
 
-    if (isUri || uploadedViaFileApi) {
-      // Use file URI reference
+    if (isRemoteUri || uploadedViaFileApi) {
+      // Use file URI reference for remote URIs or files uploaded via File API
       response = await this.transcribeWithUri(fileUri, mimeType, prompt, model, onProgress);
     } else {
-      // Use inline base64 data for small files
-      response = await this.transcribeWithInlineData(audioSource, mimeType, prompt, model, onProgress);
+      // Use inline base64 data for small local files
+      response = await this.transcribeWithInlineData(localFilePath!, mimeType, prompt, model, onProgress);
     }
 
     // Add metadata to response
     const processingTimeMs = Date.now() - startTime;
     response.metadata = {
       ...response.metadata,
-      fileName: isUri ? undefined : path.basename(audioSource),
+      fileName: localFilePath ? path.basename(localFilePath) : undefined,
       fileSize,
       mimeType,
       processingTimeMs,
@@ -321,6 +326,8 @@ export class TranscriptionManager {
   /**
    * Uploads an audio file to the Gemini File API.
    *
+   * Uses the SDK's native file path support to avoid buffering large files in memory.
+   *
    * @param filePath - Path to the audio file
    * @returns File metadata including URI
    */
@@ -331,16 +338,15 @@ export class TranscriptionManager {
 
     validateAudioFileSize(filePath, stats.size);
 
-    const fileBuffer = fs.readFileSync(filePath);
-    const blob = new Blob([fileBuffer], { type: mimeType });
-
-    const response = await this.client.files.upload({
-      file: blob,
+    // Pass file path directly to the SDK - it handles streaming internally
+    // This avoids buffering large files (up to 2GB) in memory
+    const response = (await this.client.files.upload({
+      file: filePath,
       config: {
         displayName,
         mimeType,
       },
-    }) as FileResponse;
+    })) as FileResponse;
 
     if (!response.uri) {
       throw new Error('File upload failed: no URI returned');

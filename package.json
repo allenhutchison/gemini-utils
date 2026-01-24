@@ -12,6 +12,7 @@
     "test:mime-types": "tsx scripts/test-mime-types.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
   "repository": {

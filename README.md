@@ -148,11 +148,11 @@ npx @allenhutchison/gemini-utils transcribe file recording.mp3 -o transcript.txt
 # Transcribe with timestamps
 npx @allenhutchison/gemini-utils transcribe file recording.mp3 -t -o transcript.txt
 
-# Generate SRT subtitles
-npx @allenhutchison/gemini-utils transcribe file video.mp3 -t -f srt -o subtitles.srt
+# Generate SRT subtitles (SRT output works for both audio transcripts and video subtitles)
+npx @allenhutchison/gemini-utils transcribe file audio.mp3 -t -f srt -o subtitles.srt
 
 # Generate WebVTT subtitles
-npx @allenhutchison/gemini-utils transcribe file video.mp3 -t -f vtt -o subtitles.vtt
+npx @allenhutchison/gemini-utils transcribe file audio.mp3 -t -f vtt -o subtitles.vtt
 
 # Enable speaker diarization (identifies different speakers)
 npx @allenhutchison/gemini-utils transcribe file meeting.wav -d -t -o meeting.txt
@@ -482,8 +482,10 @@ For audio transcription, the following formats are supported:
 - **WebM** (`audio/webm`)
 
 **File size limits:**
-- Files ≤ 20MB: Uploaded inline (base64)
-- Files > 20MB: Uploaded via Gemini File API (max 2GB)
+- Files ≤ 100MB: Uploaded inline (base64)
+- Files > 100MB or when the total inline request payload exceeds ~20MB: Uploaded via Gemini File API (max 2GB)
+
+Note: The 20MB limit applies to the total inline request payload (including text, system instructions, and all inline content), not individual files. Prefer using the Files API whenever your total inline request size might approach this limit.
 
 ## License
 

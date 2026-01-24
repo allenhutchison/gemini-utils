@@ -99,10 +99,10 @@ export function registerTranscribeCommands(program: Command): void {
     ) {
       const { client, outputContext } = this.ctx!;
 
-      // Determine format - default to 'timestamped' if -t flag is used without explicit format
+      // Determine format - default to 'timestamped' if -t or -d flag is used without explicit format
       let format = options.format as TranscriptFormat;
-      if (options.timestamps && options.format === 'text') {
-        // If timestamps requested but format not explicitly set, use timestamped format
+      if ((options.timestamps || options.diarization) && options.format === 'text') {
+        // If timestamps or diarization requested but format not explicitly set, use timestamped format
         format = 'timestamped';
       }
 

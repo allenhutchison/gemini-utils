@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, UploadToFileSearchStoreConfig } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -184,7 +184,7 @@ export class FileUploader {
             { key: 'last_modified', stringValue: content.lastModified },
             ...(content.customMetadata || []),
           ],
-        } as any,
+        } as UploadToFileSearchStoreConfig,
       });
 
       // Call completion callback before emitting progress event

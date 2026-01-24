@@ -15,6 +15,7 @@ import { registerUploadCommands } from './commands/upload.js';
 import { registerDocumentsCommands } from './commands/documents.js';
 import { registerResearchCommands } from './commands/research.js';
 import { registerQueryCommand } from './commands/query.js';
+import { registerTranscribeCommands } from './commands/transcribe.js';
 
 // Read version from package.json (single source of truth)
 const require = createRequire(import.meta.url);
@@ -73,6 +74,7 @@ export function createProgram(): Command {
   registerDocumentsCommands(program);
   registerResearchCommands(program);
   registerQueryCommand(program);
+  registerTranscribeCommands(program);
 
   return program;
 }

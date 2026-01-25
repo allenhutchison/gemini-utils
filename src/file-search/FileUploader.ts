@@ -1,4 +1,5 @@
-import { GoogleGenAI, UploadToFileSearchStoreConfig } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
+import type { ChunkingConfig, UploadToFileSearchStoreConfig } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -39,7 +40,7 @@ export interface Logger {
  */
 export interface UploadConfig {
   /** Chunking configuration for the upload */
-  chunkingConfig?: unknown;
+  chunkingConfig?: ChunkingConfig;
   /** Relative path to use for the file (defaults to filename) */
   relativePath?: string;
   /** Progress callback for tracking upload status */
@@ -53,7 +54,7 @@ export interface UploadConfig {
  */
 export interface BatchUploadConfig {
   /** Chunking configuration for uploads */
-  chunkingConfig?: unknown;
+  chunkingConfig?: ChunkingConfig;
   /** Progress callback for tracking upload status */
   onProgress?: ProgressCallback;
   /** Parallel upload configuration */
@@ -171,20 +172,22 @@ export class FileUploader {
         fileData = content.data;
       }
 
+      const uploadConfig = {
+        displayName: content.displayName,
+        mimeType: content.mimeType,
+        chunkingConfig: config?.chunkingConfig,
+        customMetadata: [
+          { key: 'path', stringValue: content.relativePath },
+          { key: 'hash', stringValue: content.hash },
+          { key: 'last_modified', stringValue: content.lastModified },
+          ...(content.customMetadata || []),
+        ],
+      } satisfies UploadToFileSearchStoreConfig;
+
       const op = await this.client.fileSearchStores.uploadToFileSearchStore({
         fileSearchStoreName: storeName,
         file: fileData,
-        config: {
-          displayName: content.displayName,
-          mimeType: content.mimeType,
-          chunkingConfig: config?.chunkingConfig,
-          customMetadata: [
-            { key: 'path', stringValue: content.relativePath },
-            { key: 'hash', stringValue: content.hash },
-            { key: 'last_modified', stringValue: content.lastModified },
-            ...(content.customMetadata || []),
-          ],
-        } as UploadToFileSearchStoreConfig,
+        config: uploadConfig,
       });
 
       // Call completion callback before emitting progress event

@@ -1,6 +1,6 @@
 {
   "name": "@allenhutchison/gemini-utils",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Shared utilities for Google Gemini AI projects - file upload, MIME validation, operation tracking, and deep research",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

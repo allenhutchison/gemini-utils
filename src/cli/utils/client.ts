@@ -45,5 +45,8 @@ export function createClient(apiKeyOption?: string): GoogleGenAI {
     process.exit(EXIT_CODE_NO_API_KEY);
   }
 
-  return new GoogleGenAI({ apiKey });
+  // Explicitly disable Vertex AI routing. Enterprise environments may set
+  // env vars (e.g. GOOGLE_GENAI_USE_VERTEXAI) that cause the SDK to use
+  // Vertex endpoints, which do not support the interactions API.
+  return new GoogleGenAI({ apiKey, vertexai: false });
 }

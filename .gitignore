@@ -4,3 +4,6 @@ dist/
 .DS_Store
 coverage/
 .env
+
+# Generated probe/validation reports
+scripts/*-report.json

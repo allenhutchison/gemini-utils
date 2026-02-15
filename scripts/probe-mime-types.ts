@@ -16,6 +16,8 @@
  *   npx tsx scripts/probe-mime-types.ts --method inline
  *   npx tsx scripts/probe-mime-types.ts --method file-api
  *   npx tsx scripts/probe-mime-types.ts --category image
+ *   npx tsx scripts/probe-mime-types.ts --model gemini-3.0-flash-preview
+ *   npx tsx scripts/probe-mime-types.ts --model gemini-3.0-flash-preview,gemini-2.0-flash
  *
  * Environment:
  *   GEMINI_API_KEY - Required Gemini API key
@@ -23,6 +25,7 @@
  * Output:
  *   - Console report with summary
  *   - JSON report saved to scripts/probe-mime-types-report.json
+ *   - Support matrix saved to src/generated/gemini-support-matrix.json
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -49,6 +52,8 @@ interface MimeTypeEntry {
   binary: boolean;
 }
 
+type ErrorClass = 'mime_rejected' | 'content_invalid' | 'rate_limited' | 'unknown';
+
 interface ProbeResult {
   mimeType: string;
   extension: string;
@@ -62,6 +67,7 @@ interface TestOutcome {
   status: 'pass' | 'fail' | 'skip';
   message: string;
   durationMs?: number;
+  errorClass?: ErrorClass;
 }
 
 interface ProbeReport {
@@ -74,6 +80,107 @@ interface ProbeReport {
   };
   results: ProbeResult[];
   durationMs: number;
+}
+
+interface MultiModelProbeReport {
+  timestamp: string;
+  models: string[];
+  modelReports: Record<string, ProbeReport>;
+  durationMs: number;
+}
+
+/** Shape of each entry in the generated support matrix. */
+interface MatrixEntry {
+  category: string;
+  extension: string;
+  description: string;
+  models: Record<string, {
+    inline: boolean;
+    fileApi: boolean;
+    inlineErrorClass?: ErrorClass;
+    fileApiErrorClass?: ErrorClass;
+  }>;
+}
+
+// ============================================================================
+// Error Classification
+// ============================================================================
+
+function classifyError(message: string): ErrorClass {
+  const lower = message.toLowerCase();
+
+  if (lower.includes('which is not supported') && lower.includes('mimetype')) {
+    return 'mime_rejected';
+  }
+  if (lower.includes('is not supported. update the mimetype')) {
+    return 'mime_rejected';
+  }
+  if (lower.includes('not valid') || lower.includes('provided image is not valid')) {
+    return 'content_invalid';
+  }
+  if (lower.includes('resource_exhausted') || lower.includes('429') || lower.includes('quota')) {
+    return 'rate_limited';
+  }
+
+  return 'unknown';
+}
+
+// ============================================================================
+// Rate Limiter
+// ============================================================================
+
+class RateLimiter {
+  private timestamps: number[] = [];
+  private readonly maxPerMinute: number;
+  private readonly maxRetries: number;
+
+  constructor(maxPerMinute = 30, maxRetries = 3) {
+    this.maxPerMinute = maxPerMinute;
+    this.maxRetries = maxRetries;
+  }
+
+  async acquire(): Promise<void> {
+    const now = Date.now();
+    // Remove timestamps older than 1 minute
+    this.timestamps = this.timestamps.filter(t => now - t < 60_000);
+
+    if (this.timestamps.length >= this.maxPerMinute) {
+      const oldestInWindow = this.timestamps[0];
+      const waitMs = 60_000 - (now - oldestInWindow) + 100;
+      if (waitMs > 0) {
+        await this.sleep(waitMs);
+      }
+    }
+
+    this.timestamps.push(Date.now());
+    // Small delay between requests
+    await this.sleep(200);
+  }
+
+  async withRetry<T>(fn: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        await this.acquire();
+        return await fn();
+      } catch (error: unknown) {
+        lastError = error;
+        const msg = (error as Error)?.message ?? String(error);
+        if (classifyError(msg) === 'rate_limited' && attempt < this.maxRetries) {
+          const backoff = Math.pow(2, attempt + 1) * 1000;
+          console.log(`\n  Rate limited, retrying in ${backoff / 1000}s (attempt ${attempt + 1}/${this.maxRetries})...`);
+          await this.sleep(backoff);
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw lastError;
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 }
 
 // ============================================================================
@@ -465,11 +572,13 @@ class MimeTypeProber {
   private model: string;
   private sampleDir: string;
   private results: ProbeResult[] = [];
+  private rateLimiter: RateLimiter;
 
   constructor(apiKey: string, model: string = 'gemini-2.0-flash') {
     this.client = new GoogleGenAI({ apiKey, vertexai: false });
     this.model = model;
     this.sampleDir = path.join(__dirname, '.probe-samples');
+    this.rateLimiter = new RateLimiter(30, 3);
   }
 
   async probe(options: {
@@ -497,6 +606,9 @@ class MimeTypeProber {
     if (!fs.existsSync(this.sampleDir)) {
       fs.mkdirSync(this.sampleDir, { recursive: true });
     }
+
+    // Reset results for this probe run
+    this.results = [];
 
     try {
       let count = 0;
@@ -546,22 +658,24 @@ class MimeTypeProber {
     try {
       const base64Data = content.toString('base64');
 
-      await this.client.models.generateContent({
-        model: this.model,
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                inlineData: {
-                  mimeType: entry.mimeType,
-                  data: base64Data,
+      await this.rateLimiter.withRetry(async () => {
+        await this.client.models.generateContent({
+          model: this.model,
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: entry.mimeType,
+                    data: base64Data,
+                  },
                 },
-              },
-              { text: 'Acknowledge this file with one word: OK' },
-            ],
-          },
-        ],
+                { text: 'Acknowledge this file with one word: OK' },
+              ],
+            },
+          ],
+        });
       });
 
       return {
@@ -570,10 +684,12 @@ class MimeTypeProber {
         durationMs: Date.now() - start,
       };
     } catch (error: unknown) {
+      const message = sanitizeError(error);
       return {
         status: 'fail',
-        message: sanitizeError(error),
+        message,
         durationMs: Date.now() - start,
+        errorClass: classifyError(message),
       };
     }
   }
@@ -590,12 +706,14 @@ class MimeTypeProber {
       // Write sample file to disk
       fs.writeFileSync(filePath, content);
 
-      const file = await this.client.files.upload({
-        file: filePath,
-        config: {
-          mimeType: entry.mimeType,
-          displayName: `probe-test${entry.extension}`,
-        },
+      const file = await this.rateLimiter.withRetry(async () => {
+        return await this.client.files.upload({
+          file: filePath,
+          config: {
+            mimeType: entry.mimeType,
+            displayName: `probe-test${entry.extension}`,
+          },
+        });
       });
 
       uploadedFileName = file.name;
@@ -606,10 +724,12 @@ class MimeTypeProber {
         durationMs: Date.now() - start,
       };
     } catch (error: unknown) {
+      const message = sanitizeError(error);
       return {
         status: 'fail',
-        message: sanitizeError(error),
+        message,
         durationMs: Date.now() - start,
+        errorClass: classifyError(message),
       };
     } finally {
       // Cleanup: delete the uploaded file from the API
@@ -652,6 +772,60 @@ class MimeTypeProber {
       durationMs,
     };
   }
+}
+
+// ============================================================================
+// Matrix Generation
+// ============================================================================
+
+/**
+ * Transform probe reports into the support matrix JSON.
+ * - content_invalid errors are treated as "likely supported" (content was bad, not the type).
+ * - Sorted by MIME type key for deterministic diffs.
+ */
+function generateSupportMatrix(
+  modelReports: Record<string, ProbeReport>
+): Record<string, MatrixEntry> {
+  const matrix: Record<string, MatrixEntry> = {};
+
+  for (const [modelName, report] of Object.entries(modelReports)) {
+    for (const result of report.results) {
+      if (!matrix[result.mimeType]) {
+        matrix[result.mimeType] = {
+          category: result.category,
+          extension: result.extension,
+          description: result.description,
+          models: {},
+        };
+      }
+
+      const inlineSupported =
+        result.inline.status === 'pass' ||
+        result.inline.errorClass === 'content_invalid';
+      const fileApiSupported =
+        result.fileApi.status === 'pass' ||
+        result.fileApi.errorClass === 'content_invalid';
+
+      matrix[result.mimeType].models[modelName] = {
+        inline: inlineSupported,
+        fileApi: fileApiSupported,
+        ...(result.inline.status === 'fail' && result.inline.errorClass
+          ? { inlineErrorClass: result.inline.errorClass }
+          : {}),
+        ...(result.fileApi.status === 'fail' && result.fileApi.errorClass
+          ? { fileApiErrorClass: result.fileApi.errorClass }
+          : {}),
+      };
+    }
+  }
+
+  // Sort by MIME type key for deterministic diffs
+  const sorted: Record<string, MatrixEntry> = {};
+  for (const key of Object.keys(matrix).sort()) {
+    sorted[key] = matrix[key];
+  }
+
+  return sorted;
 }
 
 // ============================================================================
@@ -702,14 +876,16 @@ function printReport(report: ProbeReport): void {
   if (inlineFails.length > 0) {
     console.log(`\n\n--- INLINE FAILURES (${inlineFails.length}) ---`);
     for (const r of inlineFails) {
-      console.log(`  ${r.mimeType}: ${r.inline.message}`);
+      const cls = r.inline.errorClass ? ` [${r.inline.errorClass}]` : '';
+      console.log(`  ${r.mimeType}${cls}: ${r.inline.message}`);
     }
   }
 
   if (fileApiFails.length > 0) {
     console.log(`\n\n--- FILE API FAILURES (${fileApiFails.length}) ---`);
     for (const r of fileApiFails) {
-      console.log(`  ${r.mimeType}: ${r.fileApi.message}`);
+      const cls = r.fileApi.errorClass ? ` [${r.fileApi.errorClass}]` : '';
+      console.log(`  ${r.mimeType}${cls}: ${r.fileApi.message}`);
     }
   }
 
@@ -720,9 +896,19 @@ function printReport(report: ProbeReport): void {
 // CLI Entry Point
 // ============================================================================
 
-function parseArgs(): { methods?: ('inline' | 'file-api')[]; categories?: string[] } {
+function parseArgs(): {
+  methods?: ('inline' | 'file-api')[];
+  categories?: string[];
+  models: string[];
+} {
   const args = process.argv.slice(2);
-  const options: { methods?: ('inline' | 'file-api')[]; categories?: string[] } = {};
+  const options: {
+    methods?: ('inline' | 'file-api')[];
+    categories?: string[];
+    models: string[];
+  } = {
+    models: ['gemini-3.0-flash-preview'],
+  };
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--method' && args[i + 1]) {
@@ -733,6 +919,9 @@ function parseArgs(): { methods?: ('inline' | 'file-api')[]; categories?: string
       i++;
     } else if (args[i] === '--category' && args[i + 1]) {
       options.categories = args[i + 1].split(',');
+      i++;
+    } else if (args[i] === '--model' && args[i + 1]) {
+      options.models = args[i + 1].split(',').map(m => m.trim());
       i++;
     }
   }
@@ -772,25 +961,64 @@ function getApiKey(): string {
 
 async function main() {
   const apiKey = getApiKey();
-
   const options = parseArgs();
 
   console.log('Starting MIME Type Probe...');
   console.log('This tests which MIME types the Gemini API actually accepts.\n');
 
+  const overallStart = Date.now();
+  const modelReports: Record<string, ProbeReport> = {};
+
   try {
-    const prober = new MimeTypeProber(apiKey);
-    const report = await prober.probe(options);
+    for (const model of options.models) {
+      console.log(`\nProbing model: ${model}`);
+      const prober = new MimeTypeProber(apiKey, model);
+      const report = await prober.probe({
+        methods: options.methods,
+        categories: options.categories,
+      });
 
-    printReport(report);
+      modelReports[model] = report;
+      printReport(report);
+    }
 
-    // Save report
+    const overallDuration = Date.now() - overallStart;
+
+    // Build multi-model report
+    const multiReport: MultiModelProbeReport = {
+      timestamp: new Date().toISOString(),
+      models: options.models,
+      modelReports,
+      durationMs: overallDuration,
+    };
+
+    // Save human-readable report (backward compatible)
     const reportPath = path.join(__dirname, 'probe-mime-types-report.json');
-    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+    fs.writeFileSync(reportPath, JSON.stringify(multiReport, null, 2));
     console.log(`Report saved to: ${reportPath}`);
 
+    // Generate and save support matrix
+    const matrix = generateSupportMatrix(modelReports);
+    const matrixPath = path.join(__dirname, '..', 'src', 'generated', 'gemini-support-matrix.json');
+    fs.mkdirSync(path.dirname(matrixPath), { recursive: true });
+    fs.writeFileSync(matrixPath, JSON.stringify(matrix, null, 2) + '\n');
+    console.log(`Support matrix saved to: ${matrixPath}`);
+
+    // Summary
+    const matrixEntries = Object.keys(matrix).length;
+    const supportedInline = Object.values(matrix).filter(e =>
+      Object.values(e.models).some(m => m.inline)
+    ).length;
+    const supportedFileApi = Object.values(matrix).filter(e =>
+      Object.values(e.models).some(m => m.fileApi)
+    ).length;
+    console.log(`\nMatrix: ${matrixEntries} MIME types, ${supportedInline} inline-capable, ${supportedFileApi} file-api-capable`);
+
     // Exit with error code if everything failed
-    const totalPassed = report.methods.inline.passed + report.methods.fileApi.passed;
+    const totalPassed = Object.values(modelReports).reduce(
+      (sum, r) => sum + r.methods.inline.passed + r.methods.fileApi.passed,
+      0
+    );
     if (totalPassed === 0) {
       console.error('\nNo MIME types passed any test - check API key and connectivity.');
       process.exit(1);
@@ -819,5 +1047,5 @@ if (isMainModule) {
   });
 }
 
-export { MimeTypeProber, MIME_TYPE_CATALOG };
-export type { ProbeReport, ProbeResult, MimeTypeEntry, TestOutcome };
+export { MimeTypeProber, MIME_TYPE_CATALOG, RateLimiter, classifyError, generateSupportMatrix };
+export type { ProbeReport, ProbeResult, MimeTypeEntry, TestOutcome, MultiModelProbeReport, ErrorClass };

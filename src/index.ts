@@ -13,3 +13,6 @@ export * from './research/index.js';
 
 // Re-export all audio-transcription module exports
 export * from './audio-transcription/index.js';
+
+// Re-export all support-registry module exports
+export * from './support-registry/index.js';

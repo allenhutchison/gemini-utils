@@ -1,0 +1,1046 @@
+{
+  "application/epub+zip": {
+    "category": "document",
+    "extension": ".epub",
+    "description": "EPUB ebook",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/graphql": {
+    "category": "data",
+    "extension": ".graphql",
+    "description": "GraphQL",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/gzip": {
+    "category": "archive",
+    "extension": ".gz",
+    "description": "GZIP archive",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/javascript": {
+    "category": "application",
+    "extension": ".mjs",
+    "description": "JavaScript (application)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/json": {
+    "category": "data",
+    "extension": ".json",
+    "description": "JSON",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/ld+json": {
+    "category": "data",
+    "extension": ".jsonld",
+    "description": "JSON-LD",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/msword": {
+    "category": "document",
+    "extension": ".doc",
+    "description": "Word document (legacy)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/octet-stream": {
+    "category": "application",
+    "extension": ".bin",
+    "description": "Binary data",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/pdf": {
+    "category": "document",
+    "extension": ".pdf",
+    "description": "PDF document",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/rtf": {
+    "category": "document",
+    "extension": ".rtf",
+    "description": "Rich Text Format",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/typescript": {
+    "category": "application",
+    "extension": ".mts",
+    "description": "TypeScript (application)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/vnd.ms-excel": {
+    "category": "document",
+    "extension": ".xls",
+    "description": "Excel spreadsheet (legacy)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/vnd.ms-powerpoint": {
+    "category": "document",
+    "extension": ".ppt",
+    "description": "PowerPoint (legacy)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+    "category": "document",
+    "extension": ".pptx",
+    "description": "PowerPoint (OOXML)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+    "category": "document",
+    "extension": ".xlsx",
+    "description": "Excel spreadsheet (OOXML)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+    "category": "document",
+    "extension": ".docx",
+    "description": "Word document (OOXML)",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/wasm": {
+    "category": "application",
+    "extension": ".wasm",
+    "description": "WebAssembly",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/x-tar": {
+    "category": "archive",
+    "extension": ".tar",
+    "description": "TAR archive",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/x-yaml": {
+    "category": "data",
+    "extension": ".yamldata",
+    "description": "YAML data",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/xml": {
+    "category": "data",
+    "extension": ".xmldata",
+    "description": "XML data",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "application/zip": {
+    "category": "archive",
+    "extension": ".zip",
+    "description": "ZIP archive",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/aac": {
+    "category": "audio",
+    "extension": ".aac",
+    "description": "AAC audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/amr": {
+    "category": "audio",
+    "extension": ".amr",
+    "description": "AMR audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/flac": {
+    "category": "audio",
+    "extension": ".flac",
+    "description": "FLAC audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/midi": {
+    "category": "audio",
+    "extension": ".mid",
+    "description": "MIDI audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/mp4": {
+    "category": "audio",
+    "extension": ".m4a",
+    "description": "M4A audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/mpeg": {
+    "category": "audio",
+    "extension": ".mp3",
+    "description": "MP3 audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/ogg": {
+    "category": "audio",
+    "extension": ".ogg",
+    "description": "OGG audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/opus": {
+    "category": "audio",
+    "extension": ".opus",
+    "description": "Opus audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/wav": {
+    "category": "audio",
+    "extension": ".wav",
+    "description": "WAV audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/webm": {
+    "category": "audio",
+    "extension": ".weba",
+    "description": "WebM audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "audio/x-aiff": {
+    "category": "audio",
+    "extension": ".aiff",
+    "description": "AIFF audio",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "font/otf": {
+    "category": "font",
+    "extension": ".otf",
+    "description": "OpenType font",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "font/ttf": {
+    "category": "font",
+    "extension": ".ttf",
+    "description": "TrueType font",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "font/woff": {
+    "category": "font",
+    "extension": ".woff",
+    "description": "WOFF font",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "font/woff2": {
+    "category": "font",
+    "extension": ".woff2",
+    "description": "WOFF2 font",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/avif": {
+    "category": "image",
+    "extension": ".avif",
+    "description": "AVIF image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/bmp": {
+    "category": "image",
+    "extension": ".bmp",
+    "description": "BMP image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/gif": {
+    "category": "image",
+    "extension": ".gif",
+    "description": "GIF image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/heic": {
+    "category": "image",
+    "extension": ".heic",
+    "description": "HEIC image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/heif": {
+    "category": "image",
+    "extension": ".heif",
+    "description": "HEIF image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/jpeg": {
+    "category": "image",
+    "extension": ".jpg",
+    "description": "JPEG image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/png": {
+    "category": "image",
+    "extension": ".png",
+    "description": "PNG image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/svg+xml": {
+    "category": "image",
+    "extension": ".svg",
+    "description": "SVG image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/tiff": {
+    "category": "image",
+    "extension": ".tiff",
+    "description": "TIFF image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/webp": {
+    "category": "image",
+    "extension": ".webp",
+    "description": "WebP image",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "image/x-icon": {
+    "category": "image",
+    "extension": ".ico",
+    "description": "ICO icon",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/css": {
+    "category": "text",
+    "extension": ".css",
+    "description": "CSS stylesheet",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/csv": {
+    "category": "text",
+    "extension": ".csv",
+    "description": "CSV data",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/html": {
+    "category": "text",
+    "extension": ".html",
+    "description": "HTML",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/javascript": {
+    "category": "text",
+    "extension": ".js",
+    "description": "JavaScript source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/markdown": {
+    "category": "text",
+    "extension": ".md",
+    "description": "Markdown",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/plain": {
+    "category": "text",
+    "extension": ".txt",
+    "description": "Plain text",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-c": {
+    "category": "text",
+    "extension": ".c",
+    "description": "C source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-c++src": {
+    "category": "text",
+    "extension": ".cpp",
+    "description": "C++ source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-clojure": {
+    "category": "text",
+    "extension": ".clj",
+    "description": "Clojure source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-diff": {
+    "category": "text",
+    "extension": ".diff",
+    "description": "Diff/patch",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-elixir": {
+    "category": "text",
+    "extension": ".ex",
+    "description": "Elixir source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-erlang": {
+    "category": "text",
+    "extension": ".erl",
+    "description": "Erlang source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-go": {
+    "category": "text",
+    "extension": ".go",
+    "description": "Go source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-haskell": {
+    "category": "text",
+    "extension": ".hs",
+    "description": "Haskell source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-java": {
+    "category": "text",
+    "extension": ".java",
+    "description": "Java source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-kotlin": {
+    "category": "text",
+    "extension": ".kt",
+    "description": "Kotlin source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-lua": {
+    "category": "text",
+    "extension": ".lua",
+    "description": "Lua source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-perl": {
+    "category": "text",
+    "extension": ".pl",
+    "description": "Perl source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-php": {
+    "category": "text",
+    "extension": ".php",
+    "description": "PHP source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-python": {
+    "category": "text",
+    "extension": ".py",
+    "description": "Python source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-ruby": {
+    "category": "text",
+    "extension": ".rb",
+    "description": "Ruby source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-rust": {
+    "category": "text",
+    "extension": ".rs",
+    "description": "Rust source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-scala": {
+    "category": "text",
+    "extension": ".scala",
+    "description": "Scala source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-shellscript": {
+    "category": "text",
+    "extension": ".sh",
+    "description": "Shell script",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-sql": {
+    "category": "text",
+    "extension": ".sql",
+    "description": "SQL",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-swift": {
+    "category": "text",
+    "extension": ".swift",
+    "description": "Swift source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-toml": {
+    "category": "text",
+    "extension": ".toml",
+    "description": "TOML",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-typescript": {
+    "category": "text",
+    "extension": ".ts",
+    "description": "TypeScript source",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/x-yaml": {
+    "category": "text",
+    "extension": ".yaml",
+    "description": "YAML",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "text/xml": {
+    "category": "text",
+    "extension": ".xml",
+    "description": "XML",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/3gpp": {
+    "category": "video",
+    "extension": ".3gp",
+    "description": "3GP video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/3gpp2": {
+    "category": "video",
+    "extension": ".3g2",
+    "description": "3GP2 video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/mp4": {
+    "category": "video",
+    "extension": ".mp4",
+    "description": "MP4 video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/mpeg": {
+    "category": "video",
+    "extension": ".mpeg",
+    "description": "MPEG video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/quicktime": {
+    "category": "video",
+    "extension": ".mov",
+    "description": "QuickTime video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/webm": {
+    "category": "video",
+    "extension": ".webm",
+    "description": "WebM video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/x-flv": {
+    "category": "video",
+    "extension": ".flv",
+    "description": "FLV video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/x-matroska": {
+    "category": "video",
+    "extension": ".mkv",
+    "description": "MKV video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/x-ms-wmv": {
+    "category": "video",
+    "extension": ".wmv",
+    "description": "WMV video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  },
+  "video/x-msvideo": {
+    "category": "video",
+    "extension": ".avi",
+    "description": "AVI video",
+    "models": {
+      "gemini-3.0-flash-preview": {
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
+      }
+    }
+  }
+}

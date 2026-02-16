@@ -928,7 +928,7 @@ function parseArgs(): {
       }
       i++;
     } else if (args[i] === '--category' && args[i + 1]) {
-      options.categories = args[i + 1].split(',');
+      options.categories = args[i + 1].split(',').map(c => c.trim());
       i++;
     } else if (args[i] === '--model' && args[i + 1]) {
       options.models = args[i + 1].split(',').map(m => m.trim());

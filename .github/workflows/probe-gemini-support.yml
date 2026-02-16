@@ -9,7 +9,7 @@ on:
       models:
         description: 'Comma-separated model names to probe'
         required: false
-        default: 'gemini-3.0-flash-preview'
+        default: 'gemini-3-flash-preview'
 
 permissions:
   contents: write
@@ -36,7 +36,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          MODELS="${{ github.event.inputs.models || 'gemini-3.0-flash-preview' }}"
+          MODELS="${{ github.event.inputs.models || 'gemini-3-flash-preview' }}"
           npx tsx scripts/probe-mime-types.ts --model "$MODELS"
 
       - name: Check for matrix changes

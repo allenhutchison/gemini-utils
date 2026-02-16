@@ -398,12 +398,22 @@ function createMinimalPng(): Buffer {
 
 // Minimal JPEG (1x1 red pixel)
 function createMinimalJpeg(): Buffer {
-  // Smallest valid JPEG
-  return Buffer.from(
-    'ffd8ffe000104a46494600010100000100010000ffdb004300080606070605080707070909080a0c140d0c0b0b0c1912130f141d1a1f1e1d1a1c1c20242e2720222c231c1c2837292c30313434341f27393d38323c2e333432ffc0000b080001000101011100ffc4001f0000010501010101010100000000000000000102030405060708090a0bffc40000ffc40000ffda00080101003f00' +
-    '7b4000017ffd9',
-    'hex'
-  );
+  // Smallest valid JPEG - verified even-length hex
+  const hex =
+    'ffd8ffe000104a46494600010100000100010000' +
+    'ffdb004300080606070605080707070909080a0c' +
+    '140d0c0b0b0c1912130f141d1a1f1e1d1a1c1c' +
+    '20242e2720222c231c1c2837292c30313434341f' +
+    '27393d38323c2e333432' +
+    'ffc0000b080001000101011100' +
+    'ffc4001f0000010501010101010100000000000000000102030405060708090a0b' +
+    'ffc40000ffc40000' +
+    'ffda00080101003f007b400001' +
+    'ffd9';
+  if (hex.length % 2 !== 0) {
+    throw new Error(`Invalid JPEG hex constant: odd length ${hex.length}`);
+  }
+  return Buffer.from(hex, 'hex');
 }
 
 // Minimal GIF (1x1)

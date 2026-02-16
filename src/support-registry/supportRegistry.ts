@@ -70,7 +70,7 @@ export function getMimeSupport(mimeType: string): MimeSupportEntry | undefined {
   if (!entry) return undefined;
 
   const reverseMap = getMimeToExtensionsMap();
-  const extensions = reverseMap.get(mimeType) ?? [entry.extension];
+  const extensions = [...(reverseMap.get(mimeType) ?? [entry.extension])];
 
   const supportedModels = Object.entries(entry.models)
     .filter(([, m]) => m.inline || m.fileApi)

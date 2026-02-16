@@ -224,25 +224,33 @@ export const COMPREHENSIVE_EXTENSION_MAP: Record<string, string> = {
   '.bin': 'application/octet-stream',
 };
 
-/** Lazily-built reverse map from MIME type → extensions. */
-let _mimeToExtensions: Map<string, string[]> | undefined;
+/** Lazily-built reverse map from MIME type → extensions (immutable). */
+let _mimeToExtensions: ReadonlyMap<string, readonly string[]> | undefined;
 
 /**
- * Returns a Map from MIME type to an array of extensions that map to it.
- * The result is cached — repeated calls return the same Map instance.
+ * Returns a ReadonlyMap from MIME type to a frozen array of extensions.
+ * The result is cached — repeated calls return the same instance.
+ * Both the map and its arrays are immutable to prevent cache corruption.
  */
-export function getMimeToExtensionsMap(): Map<string, string[]> {
+export function getMimeToExtensionsMap(): ReadonlyMap<string, readonly string[]> {
   if (_mimeToExtensions) return _mimeToExtensions;
 
-  _mimeToExtensions = new Map<string, string[]>();
+  const building = new Map<string, string[]>();
   for (const [ext, mime] of Object.entries(COMPREHENSIVE_EXTENSION_MAP)) {
-    const existing = _mimeToExtensions.get(mime);
+    const existing = building.get(mime);
     if (existing) {
       existing.push(ext);
     } else {
-      _mimeToExtensions.set(mime, [ext]);
+      building.set(mime, [ext]);
     }
   }
 
+  // Freeze each array to prevent mutation
+  const frozen = new Map<string, readonly string[]>();
+  for (const [mime, exts] of building) {
+    frozen.set(mime, Object.freeze(exts));
+  }
+
+  _mimeToExtensions = frozen;
   return _mimeToExtensions;
 }

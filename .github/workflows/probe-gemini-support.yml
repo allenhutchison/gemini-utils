@@ -11,6 +11,10 @@ on:
         required: false
         default: 'gemini-3.0-flash-preview'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   probe:
     runs-on: ubuntu-latest

@@ -1,0 +1,63 @@
+name: Probe Gemini MIME Type Support
+
+on:
+  schedule:
+    # Run weekly on Sundays at 04:00 UTC
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      models:
+        description: 'Comma-separated model names to probe'
+        required: false
+        default: 'gemini-3.0-flash-preview'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run MIME type probe
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          MODELS="${{ github.event.inputs.models || 'gemini-3.0-flash-preview' }}"
+          npx tsx scripts/probe-mime-types.ts --model "$MODELS"
+
+      - name: Check for matrix changes
+        id: changes
+        run: |
+          git diff --quiet src/generated/gemini-support-matrix.json && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update Gemini MIME type support matrix'
+          title: 'chore: update Gemini MIME type support matrix'
+          body: |
+            ## Summary
+            - Automated weekly probe of Gemini API MIME type support
+            - Updates `src/generated/gemini-support-matrix.json` with latest probe results
+
+            ## Changes
+            Run `git diff` on the matrix JSON to see which MIME types changed support status.
+          branch: chore/update-support-matrix
+          delete-branch: true
+          labels: automated,dependencies

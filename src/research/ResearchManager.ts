@@ -7,6 +7,8 @@ import { Interaction, StartResearchParams, TERMINAL_STATUSES, InteractionStatus 
 
 const DEFAULT_MODEL = 'deep-research-pro-preview-12-2025';
 const DEFAULT_POLL_INTERVAL_MS = 5000;
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_INITIAL_DELAY_MS = 1000;
 
 /**
  * Manages deep research interactions with the Gemini API.
@@ -15,7 +17,33 @@ export class ResearchManager {
   constructor(private client: GoogleGenAI) {}
 
   /**
-   * Starts a new deep research interaction.
+   * Determines if an error is a quota/billing error (not retryable)
+   * vs a transient rate limit (retryable).
+   */
+  private isQuotaError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.toLowerCase().includes('quota') ||
+      message.toLowerCase().includes('billing') ||
+      message.toLowerCase().includes('not enabled');
+  }
+
+  /**
+   * Determines if an error is a transient rate-limit that may succeed on retry.
+   */
+  private isRetryableError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    const is429 = message.includes('429');
+    // 429s caused by quota/billing issues should not be retried
+    if (is429 && this.isQuotaError(error)) return false;
+    // Retry on transient 429s, 503s, and network errors
+    return is429 ||
+      message.includes('503') ||
+      message.toLowerCase().includes('econnreset') ||
+      message.toLowerCase().includes('etimedout');
+  }
+
+  /**
+   * Starts a new deep research interaction with automatic retry for transient errors.
    * @param params - Research configuration
    * @returns The created interaction
    */
@@ -37,12 +65,30 @@ export class ResearchManager {
         ]
       : undefined;
 
-    return (await this.client.interactions.create({
-      input,
-      agent: model,
-      background,
-      tools,
-    })) as Interaction;
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= DEFAULT_MAX_RETRIES; attempt++) {
+      try {
+        return (await this.client.interactions.create({
+          input,
+          agent: model,
+          background,
+          tools,
+        })) as Interaction;
+      } catch (error: unknown) {
+        lastError = error;
+
+        // Don't retry non-retryable errors
+        if (!this.isRetryableError(error) || attempt === DEFAULT_MAX_RETRIES) {
+          throw error;
+        }
+
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = DEFAULT_INITIAL_DELAY_MS * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    throw lastError;
   }
 
   /**

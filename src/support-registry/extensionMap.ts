@@ -86,7 +86,7 @@ export const COMPREHENSIVE_EXTENSION_MAP: Record<string, string> = {
   '.htm': 'text/html',
   '.css': 'text/css',
   '.csv': 'text/csv',
-  '.tsv': 'text/csv',
+  '.tsv': 'text/tab-separated-values',
   '.md': 'text/markdown',
   '.markdown': 'text/markdown',
   '.mdown': 'text/markdown',

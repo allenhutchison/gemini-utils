@@ -34,6 +34,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { fileURLToPath } from 'url';
 import { realpathSync } from 'fs';
+import type { ErrorClass } from '../src/support-registry/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,8 +52,6 @@ interface MimeTypeEntry {
   /** Whether this requires binary content (vs text) */
   binary: boolean;
 }
-
-type ErrorClass = 'mime_rejected' | 'content_invalid' | 'rate_limited' | 'unknown';
 
 interface ProbeResult {
   mimeType: string;

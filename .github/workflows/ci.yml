@@ -56,7 +56,7 @@ jobs:
         run: npm run build
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         if: matrix.node-version == 20
         with:
           file: ./coverage/lcov.info

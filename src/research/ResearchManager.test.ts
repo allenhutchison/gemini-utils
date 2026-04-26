@@ -1,5 +1,6 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { ResearchManager } from './ResearchManager.js';
+import { ResearchManager, buildResearchTools } from './ResearchManager.js';
+import { DEEP_RESEARCH_MAX_MODEL, DEEP_RESEARCH_MODEL } from './types.js';
 
 // Mock the GoogleGenAI client
 const createMockClient = () => ({
@@ -33,11 +34,19 @@ describe('ResearchManager', () => {
 
       expect(mockClient.interactions.create).toHaveBeenCalledWith({
         input: 'Who is Allen Hutchison?',
-        agent: 'deep-research-pro-preview-12-2025',
+        agent: DEEP_RESEARCH_MODEL,
         background: true,
         tools: undefined,
       });
       expect(result).toEqual(mockInteraction);
+    });
+
+    it('default model should be deep-research-preview-04-2026', () => {
+      expect(DEEP_RESEARCH_MODEL).toBe('deep-research-preview-04-2026');
+    });
+
+    it('max model should be deep-research-max-preview-04-2026', () => {
+      expect(DEEP_RESEARCH_MAX_MODEL).toBe('deep-research-max-preview-04-2026');
     });
 
     it('should start research with custom model', async () => {
@@ -46,12 +55,12 @@ describe('ResearchManager', () => {
 
       const result = await manager.startResearch({
         input: 'Search query',
-        model: 'gemini-2.5-flash',
+        model: DEEP_RESEARCH_MAX_MODEL,
       });
 
       expect(mockClient.interactions.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          agent: 'gemini-2.5-flash',
+          agent: DEEP_RESEARCH_MAX_MODEL,
         })
       );
       expect(result).toEqual(mockInteraction);
@@ -68,7 +77,7 @@ describe('ResearchManager', () => {
 
       expect(mockClient.interactions.create).toHaveBeenCalledWith({
         input: 'Search my files',
-        agent: 'deep-research-pro-preview-12-2025',
+        agent: DEEP_RESEARCH_MODEL,
         background: true,
         tools: [
           {
@@ -78,6 +87,76 @@ describe('ResearchManager', () => {
         ],
       });
       expect(result).toEqual(mockInteraction);
+    });
+
+    it('should enable web tools when requested', async () => {
+      mockClient.interactions.create.mockResolvedValue({ id: 'i', status: 'in_progress' });
+
+      await manager.startResearch({
+        input: 'Tell me about quantum computing',
+        googleSearch: true,
+        urlContext: true,
+        codeExecution: true,
+      });
+
+      expect(mockClient.interactions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tools: [
+            { type: 'google_search' },
+            { type: 'url_context' },
+            { type: 'code_execution' },
+          ],
+        })
+      );
+    });
+
+    it('should pass MCP server configuration through', async () => {
+      mockClient.interactions.create.mockResolvedValue({ id: 'i', status: 'in_progress' });
+
+      await manager.startResearch({
+        input: 'Analyze our internal data',
+        mcpServers: [
+          {
+            name: 'finance',
+            url: 'https://mcp.example.com/finance',
+            headers: { Authorization: 'Bearer token' },
+            allowedTools: ['lookup_ticker', 'get_filings'],
+          },
+        ],
+      });
+
+      expect(mockClient.interactions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tools: [
+            {
+              type: 'mcp_server',
+              name: 'finance',
+              url: 'https://mcp.example.com/finance',
+              headers: { Authorization: 'Bearer token' },
+              allowed_tools: [{ tools: ['lookup_ticker', 'get_filings'] }],
+            },
+          ],
+        })
+      );
+    });
+
+    it('should combine file search and web tools in a single call', async () => {
+      mockClient.interactions.create.mockResolvedValue({ id: 'i', status: 'in_progress' });
+
+      await manager.startResearch({
+        input: 'Research using grounding',
+        fileSearchStoreNames: ['stores/abc'],
+        googleSearch: true,
+      });
+
+      expect(mockClient.interactions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tools: [
+            { type: 'file_search', file_search_store_names: ['stores/abc'] },
+            { type: 'google_search' },
+          ],
+        })
+      );
     });
 
     it('should allow disabling background mode', async () => {
@@ -94,6 +173,29 @@ describe('ResearchManager', () => {
           background: false,
         })
       );
+    });
+  });
+
+  describe('buildResearchTools', () => {
+    it('returns undefined when no tools are configured', () => {
+      expect(buildResearchTools({})).toBeUndefined();
+    });
+
+    it('omits empty file_search_store_names', () => {
+      expect(buildResearchTools({ fileSearchStoreNames: [] })).toBeUndefined();
+    });
+
+    it('omits MCP servers when array is empty', () => {
+      expect(buildResearchTools({ mcpServers: [] })).toBeUndefined();
+    });
+
+    it('skips MCP allowed_tools when none are provided', () => {
+      const tools = buildResearchTools({
+        mcpServers: [{ name: 'svc', url: 'https://example.com' }],
+      });
+      expect(tools).toEqual([
+        { type: 'mcp_server', name: 'svc', url: 'https://example.com' },
+      ]);
     });
   });
 

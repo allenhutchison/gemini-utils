@@ -26,15 +26,47 @@ export function isTerminalStatus(status: string): status is InteractionStatus {
 }
 
 /**
+ * Default Deep Research model (speed/efficiency tier).
+ */
+export const DEEP_RESEARCH_MODEL = 'deep-research-preview-04-2026';
+
+/**
+ * Deep Research Max model — highest-quality synthesis with extended test-time compute.
+ */
+export const DEEP_RESEARCH_MAX_MODEL = 'deep-research-max-preview-04-2026';
+
+/**
+ * Configuration for a remote MCP server tool.
+ */
+export interface McpServerConfig {
+  /** Logical server name */
+  name: string;
+  /** MCP server URL */
+  url: string;
+  /** Optional headers (e.g., Authorization) sent with each MCP request */
+  headers?: Record<string, string>;
+  /** Optional allowlist of tool names that the agent may call on this server */
+  allowedTools?: string[];
+}
+
+/**
  * Parameters for starting a deep research interaction.
  */
 export interface StartResearchParams {
   /** The research query or instructions */
   input: string;
-  /** The model/agent to use (defaults to 'deep-research-pro-preview-12-2025') */
+  /** The model/agent to use (defaults to DEEP_RESEARCH_MODEL) */
   model?: string;
-  /** Optional file search store names for grounding */
+  /** File search store names to ground the research in custom documents */
   fileSearchStoreNames?: string[];
+  /** Enable Google Search grounding (default: undefined, agent decides) */
+  googleSearch?: boolean;
+  /** Enable URL Context tool for fetching/reading specific URLs */
+  urlContext?: boolean;
+  /** Enable Code Execution tool for analysis and visualization */
+  codeExecution?: boolean;
+  /** Remote MCP servers exposing custom tools to the agent */
+  mcpServers?: McpServerConfig[];
   /** Whether to run in background mode (defaults to true) */
   background?: boolean;
 }

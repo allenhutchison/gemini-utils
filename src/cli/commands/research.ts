@@ -4,10 +4,63 @@
 
 import { Command } from 'commander';
 import * as fs from 'fs';
-import { ResearchManager, ReportGenerator, InteractionOutput } from '../../research/index.js';
+import {
+  DEEP_RESEARCH_MAX_MODEL,
+  DEEP_RESEARCH_MODEL,
+  InteractionOutput,
+  McpServerConfig,
+  ReportGenerator,
+  ResearchManager,
+} from '../../research/index.js';
 import { output, OutputContext, outputError } from '../utils/output.js';
 import { handleError, ExitCode } from '../utils/errors.js';
 import { validatePositiveInteger } from '../utils/validation.js';
+
+/**
+ * Parses --mcp flags of the form "name=label,url=https://..."
+ * or "label,https://...". Multiple --mcp flags accumulate.
+ */
+function parseMcpServers(values: string[] | undefined): McpServerConfig[] | undefined {
+  if (!values?.length) return undefined;
+  const servers: McpServerConfig[] = [];
+  for (const raw of values) {
+    const parts = raw.split(',').map((p) => p.trim()).filter(Boolean);
+    let name: string | undefined;
+    let url: string | undefined;
+    const allowedTools: string[] = [];
+    const headers: Record<string, string> = {};
+
+    for (const part of parts) {
+      const eq = part.indexOf('=');
+      if (eq === -1) {
+        // Positional: first is name, second is url
+        if (!name) name = part;
+        else if (!url) url = part;
+        continue;
+      }
+      const key = part.slice(0, eq).trim();
+      const value = part.slice(eq + 1).trim();
+      if (key === 'name' || key === 'label') name = value;
+      else if (key === 'url') url = value;
+      else if (key === 'tool' || key === 'tools') {
+        allowedTools.push(...value.split('|').map((t) => t.trim()).filter(Boolean));
+      } else if (key.startsWith('header.')) {
+        headers[key.slice('header.'.length)] = value;
+      }
+    }
+
+    if (!name || !url) {
+      throw new Error(
+        `Invalid --mcp value "${raw}". Expected "<name>,<url>" or "name=<n>,url=<u>".`
+      );
+    }
+    const server: McpServerConfig = { name, url };
+    if (allowedTools.length) server.allowedTools = allowedTools;
+    if (Object.keys(headers).length) server.headers = headers;
+    servers.push(server);
+  }
+  return servers;
+}
 
 /**
  * Writes a markdown report to a file.
@@ -34,14 +87,34 @@ export function registerResearchCommands(program: Command): void {
   research
     .command('start <query>')
     .description('Start a new deep research task')
-    .option('-m, --model <model>', 'Model to use', 'deep-research-pro-preview-12-2025')
+    .option('-m, --model <model>', 'Model to use', DEEP_RESEARCH_MODEL)
+    .option('--max', `Use the Deep Research Max model (${DEEP_RESEARCH_MAX_MODEL})`)
     .option('--stores <names>', 'File search store names (comma-separated)')
+    .option('--google-search', 'Enable Google Search tool')
+    .option('--url-context', 'Enable URL Context tool')
+    .option('--code-execution', 'Enable Code Execution tool')
+    .option(
+      '--mcp <config>',
+      'Add an MCP server, e.g. "name=docs,url=https://mcp.example.com" (repeatable)',
+      (value: string, prev: string[] = []) => [...prev, value],
+      [] as string[]
+    )
     .option('-w, --wait', 'Wait for completion')
     .option('-o, --output <file>', 'Write markdown report to file (requires --wait)')
     .action(async function (
       this: Command,
       query: string,
-      options: { model: string; stores?: string; wait?: boolean; output?: string }
+      options: {
+        model: string;
+        max?: boolean;
+        stores?: string;
+        googleSearch?: boolean;
+        urlContext?: boolean;
+        codeExecution?: boolean;
+        mcp?: string[];
+        wait?: boolean;
+        output?: string;
+      }
     ) {
       const { client, outputContext } = this.ctx!;
       const researcher = new ResearchManager(client);
@@ -57,11 +130,17 @@ export function registerResearchCommands(program: Command): void {
 
       try {
         const fileSearchStoreNames = options.stores?.split(',').map((s) => s.trim());
+        const mcpServers = parseMcpServers(options.mcp);
+        const model = options.max ? DEEP_RESEARCH_MAX_MODEL : options.model;
 
         const interaction = await researcher.startResearch({
           input: query,
-          model: options.model,
+          model,
           fileSearchStoreNames,
+          googleSearch: options.googleSearch,
+          urlContext: options.urlContext,
+          codeExecution: options.codeExecution,
+          mcpServers,
         });
 
         if (!options.wait) {

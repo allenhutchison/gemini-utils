@@ -102,6 +102,10 @@ npx @allenhutchison/gemini-utils documents delete stores/abc123/documents/xyz789
 
 #### Research
 
+The CLI uses Google's [Deep Research agents](https://ai.google.dev/gemini-api/docs/deep-research)
+(`deep-research-preview-04-2026` by default; `--max` switches to
+`deep-research-max-preview-04-2026` for maximum-quality, longer-running synthesis).
+
 ```bash
 # Start research and get ID
 npx @allenhutchison/gemini-utils research start "What is quantum computing?"
@@ -109,11 +113,22 @@ npx @allenhutchison/gemini-utils research start "What is quantum computing?"
 # Start and wait for completion
 npx @allenhutchison/gemini-utils research start "What is quantum computing?" --wait
 
+# Use Deep Research Max for the highest-quality, longest-running synthesis
+npx @allenhutchison/gemini-utils research start "Competitive landscape of vector DBs" --max --wait --output report.md
+
 # Start, wait, and save report to file
 npx @allenhutchison/gemini-utils research start "What is quantum computing?" --wait --output report.md
 
 # Use file search stores for grounding
 npx @allenhutchison/gemini-utils research start "Summarize the documents" --stores stores/abc123,stores/def456 --wait
+
+# Enable web tools explicitly (Google Search, URL fetching, code execution for charts)
+npx @allenhutchison/gemini-utils research start "Trends in renewable energy" \
+  --google-search --url-context --code-execution --wait --output report.md
+
+# Connect a remote MCP server for custom data
+npx @allenhutchison/gemini-utils research start "Latest filings for ACME" \
+  --mcp "name=finance,url=https://mcp.example.com,header.Authorization=Bearer XYZ" --wait
 
 # Check status
 npx @allenhutchison/gemini-utils research status interactions/abc123
@@ -260,16 +275,39 @@ const manager = new UploadOperationManager(new MyStorage());
 
 ```typescript
 import { GoogleGenAI } from '@google/genai';
-import { ResearchManager, ReportGenerator } from '@allenhutchison/gemini-utils';
+import {
+  DEEP_RESEARCH_MAX_MODEL,
+  ReportGenerator,
+  ResearchManager,
+} from '@allenhutchison/gemini-utils';
 
 const client = new GoogleGenAI({ apiKey: 'your-api-key' });
 const researcher = new ResearchManager(client);
 
-// Start a research task
+// Start a research task — defaults to deep-research-preview-04-2026
 const interaction = await researcher.startResearch({
   input: 'What are the latest developments in quantum computing?',
   // Optional: ground with file search stores
   fileSearchStoreNames: ['stores/my-documents'],
+  // Enable any combination of the agent's built-in tools
+  googleSearch: true,
+  urlContext: true,
+  codeExecution: true,
+  // Connect remote MCP servers exposing custom data
+  mcpServers: [
+    {
+      name: 'finance',
+      url: 'https://mcp.example.com/finance',
+      headers: { Authorization: 'Bearer token' },
+      allowedTools: ['lookup_ticker', 'get_filings'],
+    },
+  ],
+});
+
+// Use Deep Research Max for the highest-quality, longest-running synthesis
+const deep = await researcher.startResearch({
+  input: 'Comprehensive competitive analysis of vector databases',
+  model: DEEP_RESEARCH_MAX_MODEL,
 });
 
 // Poll until complete
@@ -447,7 +485,10 @@ Converts transcription results to various output formats.
 
 ### Research Types
 
-- `StartResearchParams` - Configuration for starting research
+- `StartResearchParams` - Configuration for starting research (model, fileSearchStoreNames, googleSearch, urlContext, codeExecution, mcpServers, background)
+- `McpServerConfig` - Remote MCP server configuration (name, url, headers, allowedTools)
+- `DEEP_RESEARCH_MODEL` - Default model: `deep-research-preview-04-2026`
+- `DEEP_RESEARCH_MAX_MODEL` - Max-quality model: `deep-research-max-preview-04-2026`
 - `Interaction` - Research interaction object
 - `InteractionStatus` - Status types: `in_progress`, `requires_action`, `completed`, `failed`, `cancelled`
 - `isTerminalStatus(status)` - Check if status indicates completion

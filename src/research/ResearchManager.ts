@@ -2,13 +2,62 @@
  * ResearchManager - Manages deep research interactions with Google's Gemini API.
  * Provides methods to start, monitor, and control long-running research tasks.
  */
-import { GoogleGenAI } from '@google/genai';
-import { Interaction, StartResearchParams, TERMINAL_STATUSES, InteractionStatus } from './types.js';
+import { GoogleGenAI, Interactions } from '@google/genai';
+import {
+  DEEP_RESEARCH_MODEL,
+  Interaction,
+  InteractionStatus,
+  McpServerConfig,
+  StartResearchParams,
+  TERMINAL_STATUSES,
+} from './types.js';
 
-const DEFAULT_MODEL = 'deep-research-pro-preview-12-2025';
 const DEFAULT_POLL_INTERVAL_MS = 5000;
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_INITIAL_DELAY_MS = 1000;
+
+type ResearchTool = Interactions.Tool;
+
+/**
+ * Builds the tools array sent to the Interactions API from research params.
+ * Returns undefined when no tools are configured (lets the agent use its defaults).
+ */
+export function buildResearchTools(params: {
+  fileSearchStoreNames?: string[];
+  googleSearch?: boolean;
+  urlContext?: boolean;
+  codeExecution?: boolean;
+  mcpServers?: McpServerConfig[];
+}): ResearchTool[] | undefined {
+  const tools: ResearchTool[] = [];
+
+  if (params.fileSearchStoreNames?.length) {
+    tools.push({
+      type: 'file_search',
+      file_search_store_names: params.fileSearchStoreNames,
+    });
+  }
+  if (params.googleSearch) tools.push({ type: 'google_search' });
+  if (params.urlContext) tools.push({ type: 'url_context' });
+  if (params.codeExecution) tools.push({ type: 'code_execution' });
+
+  if (params.mcpServers?.length) {
+    for (const server of params.mcpServers) {
+      const tool: Interactions.Tool.MCPServer = {
+        type: 'mcp_server',
+        name: server.name,
+        url: server.url,
+      };
+      if (server.headers) tool.headers = server.headers;
+      if (server.allowedTools?.length) {
+        tool.allowed_tools = [{ tools: server.allowedTools }];
+      }
+      tools.push(tool);
+    }
+  }
+
+  return tools.length ? tools : undefined;
+}
 
 /**
  * Manages deep research interactions with the Gemini API.
@@ -50,20 +99,22 @@ export class ResearchManager {
   async startResearch(params: StartResearchParams): Promise<Interaction> {
     const {
       input,
-      model = DEFAULT_MODEL,
+      model = DEEP_RESEARCH_MODEL,
       fileSearchStoreNames,
+      googleSearch,
+      urlContext,
+      codeExecution,
+      mcpServers,
       background = true,
     } = params;
 
-    // Build file search tools if store names provided
-    const tools = fileSearchStoreNames?.length
-      ? [
-          {
-            type: 'file_search' as const,
-            file_search_store_names: fileSearchStoreNames,
-          },
-        ]
-      : undefined;
+    const tools = buildResearchTools({
+      fileSearchStoreNames,
+      googleSearch,
+      urlContext,
+      codeExecution,
+      mcpServers,
+    });
 
     let lastError: unknown;
     for (let attempt = 0; attempt <= DEFAULT_MAX_RETRIES; attempt++) {

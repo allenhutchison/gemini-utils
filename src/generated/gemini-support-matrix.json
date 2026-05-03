@@ -101,8 +101,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -172,9 +171,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -269,8 +267,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -303,8 +300,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -315,8 +311,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -327,8 +322,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -339,8 +333,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -351,8 +344,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -363,8 +355,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -375,8 +366,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -399,9 +389,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -436,9 +425,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -449,9 +437,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -462,8 +449,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -486,9 +472,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -499,9 +484,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -524,9 +508,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -537,9 +520,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -550,9 +532,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -586,8 +567,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -598,8 +578,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -610,8 +589,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -633,8 +611,7 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": true,
-        "fileApi": false,
-        "fileApiErrorClass": "unknown"
+        "fileApi": true
       }
     }
   },
@@ -693,9 +670,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -837,9 +813,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -932,9 +907,8 @@
     "models": {
       "gemini-3-flash-preview": {
         "inline": false,
-        "fileApi": false,
-        "inlineErrorClass": "unknown",
-        "fileApiErrorClass": "unknown"
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },

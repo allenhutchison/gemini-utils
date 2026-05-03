@@ -39,6 +39,9 @@ jobs:
           MODELS="${{ github.event.inputs.models || 'gemini-3-flash-preview' }}"
           npx tsx scripts/probe-mime-types.ts --model "$MODELS"
 
+      - name: Validate matrix JSON
+        run: jq empty src/generated/gemini-support-matrix.json
+
       - name: Check for matrix changes
         id: changes
         run: |

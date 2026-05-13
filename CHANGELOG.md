@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/allenhutchison/gemini-utils/compare/v0.6.0...v1.0.0) (2026-05-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires @google/genai >= 2.0.0. Consumers reading `InteractionOutput[]` from a research interaction should now call `extractOutputs(interaction)` instead of `interaction.outputs`.
+
+### Features
+
+* upgrade @google/genai to 2.x ([a8629da](https://github.com/allenhutchison/gemini-utils/commit/a8629dacb5a8342e492485e168ea1cd3a8669f98))
+
+
+### Bug Fixes
+
+* **cli:** always write report file when --output is set ([d795f75](https://github.com/allenhutchison/gemini-utils/commit/d795f75c6add967159b774d4029ad49dc1feaa27))
+
 ## [0.7.0](https://github.com/allenhutchison/gemini-utils/compare/v0.6.0...v0.7.0) (2026-05-12)
 
 

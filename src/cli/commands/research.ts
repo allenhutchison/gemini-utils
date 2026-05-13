@@ -160,8 +160,9 @@ export function registerResearchCommands(program: Command): void {
         const completed = await researcher.poll(interaction.id);
         const completedOutputs = extractOutputs(completed);
 
-        // Generate report if output file specified
-        if (options.output && completedOutputs.length) {
+        // Generate report if output file specified (even if empty,
+        // so scripted callers always see the file they asked for).
+        if (options.output) {
           await writeReport(options.output, completedOutputs, outputContext);
         }
 
@@ -236,8 +237,9 @@ export function registerResearchCommands(program: Command): void {
         const completed = await researcher.poll(id, intervalMs);
         const completedOutputs = extractOutputs(completed);
 
-        // Generate report if output file specified
-        if (options.output && completedOutputs.length) {
+        // Generate report if output file specified (even if empty,
+        // so scripted callers always see the file they asked for).
+        if (options.output) {
           await writeReport(options.output, completedOutputs, outputContext);
         }
 

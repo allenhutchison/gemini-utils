@@ -6,6 +6,7 @@ import { GoogleGenAI, Interactions } from '@google/genai';
 import {
   DEEP_RESEARCH_MODEL,
   Interaction,
+  InteractionOutput,
   InteractionStatus,
   McpServerConfig,
   StartResearchParams,
@@ -17,6 +18,19 @@ const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_INITIAL_DELAY_MS = 1000;
 
 type ResearchTool = Interactions.Tool;
+type ModelOutputStep = Interactions.ModelOutputStep;
+
+/**
+ * Extracts the model's output content (text, images, etc.) from an interaction.
+ * In SDK v2, output content lives inside `model_output` steps rather than a
+ * top-level `outputs` array. This helper flattens those steps back into the
+ * v1-equivalent `InteractionOutput[]` shape that downstream code consumes.
+ */
+export function extractOutputs(interaction: Interaction): InteractionOutput[] {
+  return (interaction.steps ?? [])
+    .filter((step): step is ModelOutputStep => step.type === 'model_output')
+    .flatMap((step) => step.content ?? []);
+}
 
 /**
  * Builds the tools array sent to the Interactions API from research params.

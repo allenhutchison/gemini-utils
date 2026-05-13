@@ -2,7 +2,7 @@
  * TranscriptionManager - Manages audio transcription interactions with Google's Gemini API.
  * Provides methods to transcribe audio files using the Interactions API.
  */
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Interactions } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -41,20 +41,7 @@ interface GenerateContentResponse {
   }>;
 }
 
-/**
- * Interaction response from the Gemini API (for polling uploaded files).
- */
-interface InteractionResponse {
-  id?: string;
-  status?: string;
-  outputs?: Array<{
-    type?: string;
-    text?: string;
-  }>;
-  error?: {
-    message?: string;
-  };
-}
+type InteractionResponse = Interactions.Interaction;
 
 /**
  * File metadata from the Gemini Files API.

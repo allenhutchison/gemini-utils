@@ -4,6 +4,7 @@
 
 import { Command } from 'commander';
 import { FileSearchManager } from '../../file-search/index.js';
+import { extractOutputs } from '../../research/index.js';
 import { output } from '../utils/output.js';
 import { handleError } from '../utils/errors.js';
 
@@ -35,7 +36,7 @@ export function registerQueryCommand(program: Command): void {
 
         output(outputContext, interaction, () => {
           // Extract text content and citations from outputs
-          const outputs = interaction.outputs ?? [];
+          const outputs = extractOutputs(interaction);
           const textParts: string[] = [];
           const citations = new Set<string>();
 

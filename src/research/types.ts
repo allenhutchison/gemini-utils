@@ -3,6 +3,7 @@
  * Re-exports SDK types and defines custom interfaces for deep research operations.
  */
 
+import type { Interactions } from '@google/genai';
 // Import Interaction type from file-search module (canonical source)
 import { Interaction, TextContent } from '../file-search/FileSearchManager.js';
 
@@ -10,13 +11,15 @@ import { Interaction, TextContent } from '../file-search/FileSearchManager.js';
 export type { Interaction, TextContent };
 
 // Additional research-specific types
-export type InteractionStatus = 'in_progress' | 'requires_action' | 'completed' | 'failed' | 'cancelled';
-export type InteractionOutput = NonNullable<Interaction['outputs']>[number];
+export type InteractionStatus = 'in_progress' | 'requires_action' | 'completed' | 'failed' | 'cancelled' | 'incomplete';
+// In SDK v2 the model output is delivered via `Interaction.steps[]` rather than `Interaction.outputs[]`;
+// the content union (text/image/audio/document/video) is exposed as `Interactions.Content`.
+export type InteractionOutput = Interactions.Content;
 
 /**
  * Terminal statuses that indicate a research interaction has finished.
  */
-export const TERMINAL_STATUSES: ReadonlyArray<InteractionStatus> = ['completed', 'failed', 'cancelled'];
+export const TERMINAL_STATUSES: ReadonlyArray<InteractionStatus> = ['completed', 'failed', 'cancelled', 'incomplete'];
 
 /**
  * Checks if a status indicates the interaction has finished.

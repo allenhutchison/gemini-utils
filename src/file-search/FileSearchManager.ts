@@ -70,19 +70,8 @@ export class FileSearchManager {
    * @returns The interaction response containing query results
    */
   async queryStore(storeName: string, query: string, model: string = 'gemini-2.5-flash'): Promise<Interaction> {
-    // The interactions API is not yet in the SDK types, so we use a type assertion
-    const client = this.client as GoogleGenAI & {
-      interactions: {
-        create(params: {
-          model: string;
-          input: string;
-          tools: Array<{ type: string; file_search_store_names: string[] }>;
-        }): Promise<Interaction>;
-      };
-    };
-
-    return await client.interactions.create({
-      model: model,
+    return await this.client.interactions.create({
+      model,
       input: query,
       tools: [
         {

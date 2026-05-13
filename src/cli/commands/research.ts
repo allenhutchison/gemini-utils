@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import {
   DEEP_RESEARCH_MAX_MODEL,
   DEEP_RESEARCH_MODEL,
+  extractOutputs,
   InteractionOutput,
   McpServerConfig,
   ReportGenerator,
@@ -157,10 +158,12 @@ export function registerResearchCommands(program: Command): void {
         }
 
         const completed = await researcher.poll(interaction.id);
+        const completedOutputs = extractOutputs(completed);
 
-        // Generate report if output file specified
-        if (options.output && completed.outputs) {
-          await writeReport(options.output, completed.outputs, outputContext);
+        // Generate report if output file specified (even if empty,
+        // so scripted callers always see the file they asked for).
+        if (options.output) {
+          await writeReport(options.output, completedOutputs, outputContext);
         }
 
         output(outputContext, completed, () => {
@@ -168,8 +171,8 @@ export function registerResearchCommands(program: Command): void {
             `Research complete: ${completed.id}`,
             `Status: ${completed.status}`,
           ];
-          if (completed.outputs?.length) {
-            lines.push(`Outputs: ${completed.outputs.length} items`);
+          if (completedOutputs.length) {
+            lines.push(`Outputs: ${completedOutputs.length} items`);
           }
           return lines.join('\n');
         });
@@ -188,13 +191,14 @@ export function registerResearchCommands(program: Command): void {
 
       try {
         const interaction = await researcher.getStatus(id);
+        const outputs = extractOutputs(interaction);
         output(outputContext, interaction, () => {
           const lines = [
             `ID: ${interaction.id}`,
             `Status: ${interaction.status}`,
           ];
-          if (interaction.outputs?.length) {
-            lines.push(`Outputs: ${interaction.outputs.length} items`);
+          if (outputs.length) {
+            lines.push(`Outputs: ${outputs.length} items`);
           }
           return lines.join('\n');
         });
@@ -231,10 +235,12 @@ export function registerResearchCommands(program: Command): void {
         }
 
         const completed = await researcher.poll(id, intervalMs);
+        const completedOutputs = extractOutputs(completed);
 
-        // Generate report if output file specified
-        if (options.output && completed.outputs) {
-          await writeReport(options.output, completed.outputs, outputContext);
+        // Generate report if output file specified (even if empty,
+        // so scripted callers always see the file they asked for).
+        if (options.output) {
+          await writeReport(options.output, completedOutputs, outputContext);
         }
 
         output(outputContext, completed, () => {
@@ -242,8 +248,8 @@ export function registerResearchCommands(program: Command): void {
             `Research complete: ${completed.id}`,
             `Status: ${completed.status}`,
           ];
-          if (completed.outputs?.length) {
-            lines.push(`Outputs: ${completed.outputs.length} items`);
+          if (completedOutputs.length) {
+            lines.push(`Outputs: ${completedOutputs.length} items`);
           }
           return lines.join('\n');
         });

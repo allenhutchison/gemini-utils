@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { ResearchManager, buildResearchTools } from './ResearchManager.js';
+import { ResearchManager, buildResearchTools, extractOutputs } from './ResearchManager.js';
 import { DEEP_RESEARCH_MAX_MODEL, DEEP_RESEARCH_MODEL } from './types.js';
 
 // Mock the GoogleGenAI client
@@ -242,14 +242,19 @@ describe('ResearchManager', () => {
         .mockResolvedValueOnce({
           id: 'interaction-123',
           status: 'completed',
-          outputs: [{ type: 'text', text: 'Result' }],
+          steps: [
+            {
+              type: 'model_output',
+              content: [{ type: 'text', text: 'Result' }],
+            },
+          ],
         });
 
       const result = await manager.poll('interaction-123', 10); // 10ms interval for test
 
       expect(mockClient.interactions.get).toHaveBeenCalledTimes(2);
       expect(result.status).toBe('completed');
-      expect(result.outputs).toEqual([{ type: 'text', text: 'Result' }]);
+      expect(extractOutputs(result)).toEqual([{ type: 'text', text: 'Result' }]);
     });
 
     it('should poll research status until failure', async () => {

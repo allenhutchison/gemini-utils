@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.7.0](https://github.com/allenhutchison/gemini-utils/compare/v0.6.0...v0.7.0) (2026-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* require `@google/genai` >= 2.0.0. The Interactions API response shape changed in v2: `Interaction.outputs` was removed; output content now lives in `Interaction.steps[]` (filtered to `ModelOutputStep.content[]`). Use the new `extractOutputs(interaction)` helper from `@allenhutchison/gemini-utils/research` to read text/image/audio content out of an interaction.
+
+
+### Features
+
+* upgrade `@google/genai` peer dependency from 1.x to 2.x
+* add `extractOutputs(interaction)` helper that flattens `interaction.steps` into the v1-equivalent `InteractionOutput[]`
+* add `'incomplete'` to `InteractionStatus` and `TERMINAL_STATUSES` (introduced by SDK v2)
+
+
+### Bug Fixes
+
+* drop now-unnecessary `interactions.create` type-assertion workaround in `FileSearchManager.queryStore` (v2 types this surface natively)
+
 ## [0.6.0](https://github.com/allenhutchison/gemini-utils/compare/v0.5.0...v0.6.0) (2026-05-03)
 
 

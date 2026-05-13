@@ -30,7 +30,12 @@ describe('TranscriptionManager', () => {
       const mockInteraction = {
         id: 'interaction-123',
         status: 'completed',
-        outputs: [{ type: 'text', text: 'Transcribed text' }],
+        steps: [
+          {
+            type: 'model_output',
+            content: [{ type: 'text', text: 'Transcribed text' }],
+          },
+        ],
       };
       mockClient.interactions.get.mockResolvedValue(mockInteraction);
 

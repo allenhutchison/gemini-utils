@@ -199,8 +199,11 @@ export class TranscriptionManager {
     });
 
     // Use the Interactions API with a file URI reference for the audio input.
+    // Run synchronously (background: false) so the response carries the
+    // model_output steps that parseInteractionResponse reads immediately.
     const interaction = await this.client.interactions.create({
       model,
+      background: false,
       input: [
         {
           type: 'audio',
@@ -234,8 +237,11 @@ export class TranscriptionManager {
     });
 
     // Use the Interactions API with inline base64 audio data.
+    // Run synchronously (background: false) so the response carries the
+    // model_output steps that parseInteractionResponse reads immediately.
     const interaction = await this.client.interactions.create({
       model,
+      background: false,
       input: [
         {
           type: 'audio',

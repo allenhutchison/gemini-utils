@@ -27,21 +27,36 @@ const DEFAULT_MODEL = 'gemini-3-flash-preview';
 const DEFAULT_POLL_INTERVAL_MS = 2000;
 const DEFAULT_POLL_TIMEOUT_MS = 600000; // 10 minutes
 
+type InteractionResponse = Interactions.Interaction;
+type AudioMimeType = Interactions.AudioContent['mime_type'];
+
 /**
- * Response from generateContent API.
+ * Maps the MIME types produced by {@link AUDIO_EXTENSION_TO_MIME} onto the
+ * audio MIME types accepted by the Interactions API's `AudioContent` input.
+ * Most types pass through unchanged; `.m4a` files report `audio/mp4` which the
+ * Interactions API spells `audio/m4a`.
  */
-interface GenerateContentResponse {
-  text?: string;
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{
-        text?: string;
-      }>;
-    };
-  }>;
+function toInteractionAudioMimeType(mimeType: string): AudioMimeType {
+  if (mimeType === 'audio/mp4') return 'audio/m4a';
+  // Other supported types (audio/mpeg, audio/wav, audio/flac, audio/aac,
+  // audio/ogg, ...) map directly. Anything outside the SDK union (e.g.
+  // audio/webm) is still forwarded to the API, which validates it server-side.
+  return mimeType as AudioMimeType;
 }
 
-type InteractionResponse = Interactions.Interaction;
+/**
+ * Extracts the model's text output from a completed interaction.
+ * Output content lives inside `model_output` steps; this flattens those steps
+ * and concatenates their text parts.
+ */
+function extractInteractionText(interaction: InteractionResponse): string {
+  return (interaction.steps ?? [])
+    .filter((step): step is Interactions.ModelOutputStep => step.type === 'model_output')
+    .flatMap((step) => step.content ?? [])
+    .filter((content): content is Interactions.TextContent => content.type === 'text')
+    .map((content) => content.text)
+    .join('\n');
+}
 
 /**
  * File metadata from the Gemini Files API.
@@ -183,26 +198,23 @@ export class TranscriptionManager {
       message: 'Processing audio...',
     });
 
-    // Use generateContent API for multimodal input
-    const response = await this.client.models.generateContent({
+    // Use the Interactions API with a file URI reference for the audio input.
+    // Run synchronously (background: false) so the response carries the
+    // model_output steps that parseInteractionResponse reads immediately.
+    const interaction = await this.client.interactions.create({
       model,
-      contents: [
+      background: false,
+      input: [
         {
-          role: 'user',
-          parts: [
-            {
-              fileData: {
-                fileUri: fileUri,
-                mimeType: mimeType,
-              },
-            },
-            { text: prompt },
-          ],
+          type: 'audio',
+          uri: fileUri,
+          mime_type: toInteractionAudioMimeType(mimeType),
         },
+        { type: 'text', text: prompt },
       ],
-    }) as GenerateContentResponse;
+    });
 
-    return this.parseGenerateContentResponse(response, model);
+    return this.parseInteractionResponse(interaction, model);
   }
 
   /**
@@ -224,44 +236,33 @@ export class TranscriptionManager {
       message: 'Processing audio...',
     });
 
-    // Use generateContent API for multimodal input
-    const response = await this.client.models.generateContent({
+    // Use the Interactions API with inline base64 audio data.
+    // Run synchronously (background: false) so the response carries the
+    // model_output steps that parseInteractionResponse reads immediately.
+    const interaction = await this.client.interactions.create({
       model,
-      contents: [
+      background: false,
+      input: [
         {
-          role: 'user',
-          parts: [
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: mimeType,
-              },
-            },
-            { text: prompt },
-          ],
+          type: 'audio',
+          data: base64Data,
+          mime_type: toInteractionAudioMimeType(mimeType),
         },
+        { type: 'text', text: prompt },
       ],
-    }) as GenerateContentResponse;
+    });
 
-    return this.parseGenerateContentResponse(response, model);
+    return this.parseInteractionResponse(interaction, model);
   }
 
   /**
-   * Parses the generateContent response.
+   * Parses the Interactions API response into a transcription result.
    */
-  private parseGenerateContentResponse(
-    response: GenerateContentResponse,
+  private parseInteractionResponse(
+    interaction: InteractionResponse,
     model: string
   ): TranscriptionResult {
-    // Extract text from response - try direct text property first, then candidates
-    let rawText = response.text || '';
-    if (!rawText && response.candidates?.[0]?.content?.parts) {
-      rawText = response.candidates[0].content.parts
-        .filter(p => p.text)
-        .map(p => p.text!)
-        .join('\n');
-    }
-    rawText = rawText.trim();
+    const rawText = extractInteractionText(interaction).trim();
 
     if (!rawText) {
       throw new Error('Transcription failed: no text in response');

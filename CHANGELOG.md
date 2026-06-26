@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/allenhutchison/gemini-utils/compare/v1.0.0...v1.1.0) (2026-06-26)
+
+
+### Features
+
+* **transcription:** migrate audio transcription to the Interactions API ([c9e8bc4](https://github.com/allenhutchison/gemini-utils/commit/c9e8bc4185b85133795dc92cae07a9f182759855))
+* **transcription:** surface Interactions API migration as 1.1.0 ([989b9d2](https://github.com/allenhutchison/gemini-utils/commit/989b9d248351f382e4787f24a2663524b4657936))
+
+
+### Bug Fixes
+
+* **transcription:** run interactions synchronously with background: false ([814bf87](https://github.com/allenhutchison/gemini-utils/commit/814bf87d72ff9a255eba285fcbc6f1c7e264e3f3))
+
 ## [1.0.0](https://github.com/allenhutchison/gemini-utils/compare/v0.6.0...v1.0.0) (2026-05-13)
 
 

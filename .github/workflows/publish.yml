@@ -1,14 +1,10 @@
 name: Publish to npm
 
+# Invoked only via workflow_call from release-please.yml so that workflow stays
+# the single OIDC entry point npm trusts. npm trusted publishing matches the
+# top-level (entry) workflow, not the reusable one it calls, so this file must
+# not be triggered directly.
 on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
-    inputs:
-      ref:
-        description: 'Release tag to publish from, e.g. v0.6.0'
-        required: true
   workflow_call:
     inputs:
       ref:
@@ -25,19 +21,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Validate manual ref is a version tag
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Validate ref is a version tag
+        env:
+          REF: ${{ inputs.ref }}
         run: |
-          REF="${{ inputs.ref }}"
-          if [[ ! "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.].*)?$ ]]; then
-            echo "::error::Input ref must be a version tag (e.g. v1.2.3); got '$REF'."
+          if [[ ! "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::ref must be a version tag (e.g. v1.2.3); got '$REF'."
             exit 1
           fi
 
       - name: Checkout code
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

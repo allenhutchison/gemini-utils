@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/allenhutchison/gemini-utils/compare/v1.1.0...v1.2.0) (2026-07-10)
+
+
+### Features
+
+* browser-safe subpath exports; drop Node `path` from MIME modules ([#55](https://github.com/allenhutchison/gemini-utils/issues/55)) ([a6f2024](https://github.com/allenhutchison/gemini-utils/commit/a6f2024cc4117169d4271e0ae004de8285b4dcc8))
+
 ## [1.1.0](https://github.com/allenhutchison/gemini-utils/compare/v1.0.0...v1.1.0) (2026-06-26)
 
 

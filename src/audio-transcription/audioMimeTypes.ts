@@ -3,7 +3,7 @@
  * Based on Gemini API supported audio formats.
  */
 
-import * as path from 'path';
+import { extname } from '../common/pathHelpers.js';
 
 /**
  * Mapping of audio file extensions to MIME types supported by Gemini.
@@ -77,7 +77,7 @@ export function isAudioExtensionSupported(extension: string): boolean {
  * @returns MIME type string, or null if extension is not supported
  */
 export function getAudioMimeType(filePath: string): string | null {
-  const ext = path.extname(filePath).toLowerCase();
+  const ext = extname(filePath).toLowerCase();
   return AUDIO_EXTENSION_TO_MIME[ext] || null;
 }
 
@@ -89,7 +89,7 @@ export function getAudioMimeType(filePath: string): string | null {
  * @throws UnsupportedAudioTypeError if the file type is not supported
  */
 export function requireAudioMimeType(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase();
+  const ext = extname(filePath).toLowerCase();
   const mimeType = AUDIO_EXTENSION_TO_MIME[ext];
   if (!mimeType) {
     throw new UnsupportedAudioTypeError(filePath, ext);

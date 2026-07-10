@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { extname } from '../common/pathHelpers.js';
 
 /**
  * Validated mapping of file extensions to MIME types supported by Gemini File Search API.
@@ -248,7 +248,7 @@ export function isExtensionSupported(extension: string): boolean {
  * @returns MIME type string, or null if extension is not supported
  */
 export function getMimeType(filePath: string): string | null {
-  const ext = path.extname(filePath).toLowerCase();
+  const ext = extname(filePath).toLowerCase();
   return EXTENSION_TO_MIME[ext] || null;
 }
 
@@ -261,7 +261,7 @@ export function getMimeType(filePath: string): string | null {
  * @returns Object with mimeType and whether fallback was used, or null if unsupported
  */
 export function getMimeTypeWithFallback(filePath: string): { mimeType: string; isFallback: boolean } | null {
-  const ext = path.extname(filePath).toLowerCase();
+  const ext = extname(filePath).toLowerCase();
 
   // First try validated MIME types
   const validatedMime = EXTENSION_TO_MIME[ext];

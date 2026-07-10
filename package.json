@@ -5,6 +5,34 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mime": {
+      "types": "./dist/file-search/mimeTypes.d.ts",
+      "import": "./dist/file-search/mimeTypes.js"
+    },
+    "./file-search": {
+      "types": "./dist/file-search/index.d.ts",
+      "import": "./dist/file-search/index.js"
+    },
+    "./research": {
+      "types": "./dist/research/index.d.ts",
+      "import": "./dist/research/index.js"
+    },
+    "./audio-transcription": {
+      "types": "./dist/audio-transcription/index.d.ts",
+      "import": "./dist/audio-transcription/index.js"
+    },
+    "./support-registry": {
+      "types": "./dist/support-registry/index.d.ts",
+      "import": "./dist/support-registry/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",

@@ -200,6 +200,33 @@ npx @allenhutchison/gemini-utils stores list --json | jq '.[] | .name'
 
 ## Usage
 
+### Import surface & browser/mobile safety
+
+The package is marked `"sideEffects": false` and exposes granular subpath exports in
+addition to the top-level barrel:
+
+| Entry | Contents | Node built-ins |
+| --- | --- | --- |
+| `@allenhutchison/gemini-utils` | everything (barrel) | pulls in `fs`/`path`/`crypto`/`url` transitively |
+| `@allenhutchison/gemini-utils/mime` | MIME/extension helpers + maps (`getMimeTypeWithFallback`, `EXTENSION_TO_MIME`, …) | **none** |
+| `@allenhutchison/gemini-utils/support-registry` | extension/support registry + comprehensive map | **none** |
+| `@allenhutchison/gemini-utils/file-search` | file upload / search managers | `fs`, `path`, `crypto` |
+| `@allenhutchison/gemini-utils/research` | deep-research managers | (via `@google/genai`) |
+| `@allenhutchison/gemini-utils/audio-transcription` | transcription managers + audio MIME helpers | `fs`, `path`, `url` |
+
+Consumers that must stay free of Node built-ins at load time (browser or mobile bundles,
+e.g. Obsidian plugins) should import MIME/extension helpers from the built-in-free
+`/mime` or `/support-registry` subpaths rather than the barrel, and lazy-load the
+file-search / research / audio-transcription managers only when a desktop feature runs:
+
+```typescript
+// Safe anywhere — no Node built-ins are evaluated:
+import { getMimeTypeWithFallback, EXTENSION_TO_MIME } from '@allenhutchison/gemini-utils/mime';
+
+// Desktop-only; defer so the fs/path/crypto requires never run at load:
+const { FileUploader } = await import('@allenhutchison/gemini-utils/file-search');
+```
+
 ### Basic File Upload
 
 ```typescript

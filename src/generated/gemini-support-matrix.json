@@ -277,8 +277,9 @@
     "description": "FLAC audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -288,8 +289,9 @@
     "description": "MIDI audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -299,8 +301,9 @@
     "description": "M4A audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -310,8 +313,9 @@
     "description": "MP3 audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -321,8 +325,9 @@
     "description": "OGG audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -332,8 +337,9 @@
     "description": "Opus audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -343,8 +349,9 @@
     "description": "WAV audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -354,8 +361,9 @@
     "description": "WebM audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -365,8 +373,9 @@
     "description": "AIFF audio",
     "models": {
       "gemini-3-flash-preview": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },

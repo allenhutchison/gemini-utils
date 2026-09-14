@@ -393,7 +393,7 @@ const detailed = await transcriber.transcribe({
   timestamps: true,
   diarization: true,
   language: 'en',
-  model: 'gemini-3-flash-preview',
+  model: 'gemini-flash-latest',
 });
 
 // Access timestamped segments

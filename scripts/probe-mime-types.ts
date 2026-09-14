@@ -17,7 +17,7 @@
  *   npx tsx scripts/probe-mime-types.ts --method file-api
  *   npx tsx scripts/probe-mime-types.ts --category image
  *   npx tsx scripts/probe-mime-types.ts --model gemini-flash-latest
- *   npx tsx scripts/probe-mime-types.ts --model gemini-flash-latest,gemini-2.0-flash
+ *   npx tsx scripts/probe-mime-types.ts --model gemini-flash-latest,gemini-3-pro-preview
  *
  * Environment:
  *   GEMINI_API_KEY - Required Gemini API key

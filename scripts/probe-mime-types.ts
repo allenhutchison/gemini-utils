@@ -16,8 +16,8 @@
  *   npx tsx scripts/probe-mime-types.ts --method inline
  *   npx tsx scripts/probe-mime-types.ts --method file-api
  *   npx tsx scripts/probe-mime-types.ts --category image
- *   npx tsx scripts/probe-mime-types.ts --model gemini-3-flash-preview
- *   npx tsx scripts/probe-mime-types.ts --model gemini-3-flash-preview,gemini-2.0-flash
+ *   npx tsx scripts/probe-mime-types.ts --model gemini-flash-latest
+ *   npx tsx scripts/probe-mime-types.ts --model gemini-flash-latest,gemini-3-pro-preview
  *
  * Environment:
  *   GEMINI_API_KEY - Required Gemini API key
@@ -583,7 +583,7 @@ class MimeTypeProber {
   private results: ProbeResult[] = [];
   private rateLimiter: RateLimiter;
 
-  constructor(apiKey: string, model: string = 'gemini-3-flash-preview') {
+  constructor(apiKey: string, model: string = 'gemini-flash-latest') {
     this.client = new GoogleGenAI({ apiKey, vertexai: false });
     this.model = model;
     this.sampleDir = path.join(__dirname, '.probe-samples');
@@ -916,7 +916,7 @@ function parseArgs(): {
     categories?: string[];
     models: string[];
   } = {
-    models: ['gemini-3-flash-preview'],
+    models: ['gemini-flash-latest'],
   };
 
   for (let i = 0; i < args.length; i++) {

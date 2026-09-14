@@ -9,7 +9,7 @@ on:
       models:
         description: 'Comma-separated model names to probe'
         required: false
-        default: 'gemini-3-flash-preview'
+        default: 'gemini-flash-latest'
 
 permissions:
   contents: write
@@ -35,9 +35,8 @@ jobs:
       - name: Run MIME type probe
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          MODELS="${{ github.event.inputs.models || 'gemini-3-flash-preview' }}"
-          npx tsx scripts/probe-mime-types.ts --model "$MODELS"
+          MODELS: ${{ github.event.inputs.models || 'gemini-flash-latest' }}
+        run: npx tsx scripts/probe-mime-types.ts --model "$MODELS"
 
       - name: Validate matrix JSON
         run: jq empty src/generated/gemini-support-matrix.json

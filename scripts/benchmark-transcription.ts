@@ -8,7 +8,7 @@
  *
  * Options:
  *   --reference <file>  Reference transcript for Word Error Rate (WER) calculation
- *   --models <list>     Comma-separated list of models to test (default: gemini-3-flash-preview,gemini-3-pro-preview)
+ *   --models <list>     Comma-separated list of models to test (default: gemini-flash-latest,gemini-3-pro-preview)
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -78,7 +78,7 @@ async function runBenchmark(
   const client = new GoogleGenAI({ apiKey });
   const transcriber = new TranscriptionManager(client);
 
-  const models = modelList || ['gemini-3-flash-preview', 'gemini-3-pro-preview'];
+  const models = modelList || ['gemini-flash-latest', 'gemini-3-pro-preview'];
   const promptTypes = ['basic', 'timestamped', 'diarized'];
 
   const results: BenchmarkResult[] = [];
@@ -193,7 +193,7 @@ if (!audioFile) {
   console.log();
   console.log('Options:');
   console.log('  --reference <file>  Reference transcript for WER calculation');
-  console.log('  --models <list>     Comma-separated list of models (default: gemini-3-flash-preview,gemini-3-pro-preview)');
+  console.log('  --models <list>     Comma-separated list of models (default: gemini-flash-latest,gemini-3-pro-preview)');
   process.exit(1);
 }
 

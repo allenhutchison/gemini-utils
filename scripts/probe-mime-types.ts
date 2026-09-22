@@ -123,6 +123,18 @@ function classifyError(message: string): ErrorClass {
   if (lower.includes('must be one of') && normalized.includes('mimetype')) {
     return 'mime_rejected';
   }
+  // Explicit type-rejection phrasings that don't mention "mimetype" directly.
+  // Must be checked before the content-validation rule below, which would
+  // otherwise swallow "Invalid file type" as content_invalid.
+  if (
+    normalized.includes('invalidfiletype') ||
+    normalized.includes('invalidmimetype') ||
+    normalized.includes('unsupportedfiletype') ||
+    normalized.includes('unsupportedmimetype') ||
+    normalized.includes('unsupportedmediatype')
+  ) {
+    return 'mime_rejected';
+  }
   // Content-validation failures mean the MIME type was accepted but the sample
   // data could not be parsed — the type itself is supported.
   if (

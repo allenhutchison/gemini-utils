@@ -39,6 +39,7 @@
     "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "test:mime-types": "tsx scripts/test-mime-types.ts",
     "test:probe-mime-types": "tsx scripts/probe-mime-types.ts",
+    "generate:fixtures": "tsx scripts/generate-fixtures.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",

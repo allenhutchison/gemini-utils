@@ -4,7 +4,7 @@
  *
  * Probes the Gemini API to discover which MIME types are actually supported
  * for two upload methods:
- *   1. Inline base64 (via generateContent with inlineData)
+ *   1. Inline base64 (via Interactions API content blocks with base64 data)
  *   2. File API upload (via client.files.upload)
  *
  * The Gemini documentation is often stale, so this script manually verifies
@@ -29,6 +29,7 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
+import type { Interactions } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -107,11 +108,14 @@ interface MatrixEntry {
 
 function classifyError(message: string): ErrorClass {
   const lower = message.toLowerCase();
+  // Normalize "mime_type" / "mime type" / "mimetype" spellings so both the
+  // legacy generateContent and Interactions API error phrasings match.
+  const normalized = lower.replace(/[_\s-]/g, '');
 
-  if (lower.includes('which is not supported') && lower.includes('mimetype')) {
+  if (normalized.includes('mimetype') && (normalized.includes('notsupported') || normalized.includes('updatethe'))) {
     return 'mime_rejected';
   }
-  if (lower.includes('is not supported. update the mimetype')) {
+  if (lower.includes('must be one of') && normalized.includes('mimetype')) {
     return 'mime_rejected';
   }
   if (lower.includes('not valid') || lower.includes('provided image is not valid')) {
@@ -573,6 +577,51 @@ function createGenericBinaryContent(mimeType: string): Buffer {
 }
 
 // ============================================================================
+// Interactions API content blocks
+// ============================================================================
+
+/**
+ * Maps a probe catalog category to the Interactions API content block type.
+ * Images, audio, and video have dedicated content blocks; everything else
+ * (documents, text/code, structured data, archives, fonts, misc application
+ * types) is sent as a document block. Per the Gemini docs, non-PDF documents
+ * are extracted as plain text, which is exactly what the probe should verify.
+ */
+const CONTENT_BLOCK_TYPE: Record<string, 'image' | 'audio' | 'video' | 'document'> = {
+  image: 'image',
+  audio: 'audio',
+  video: 'video',
+  document: 'document',
+  text: 'document',
+  data: 'document',
+  archive: 'document',
+  font: 'document',
+  application: 'document',
+};
+
+/**
+ * Build an Interactions API content block for the given catalog entry.
+ * Pass `{ data }` for inline base64 tests, or `{ uri }` for Files API references.
+ *
+ * The SDK narrows each content block's `mime_type` to a closed enum mirroring
+ * the docs, but the probe deliberately sends the full MIME catalog (including
+ * types outside the documented enums) to discover what the API actually
+ * accepts, so the result is cast to the SDK type.
+ */
+function buildContentBlock(
+  entry: MimeTypeEntry,
+  content: { data?: string; uri?: string }
+): Interactions.Content {
+  const type = CONTENT_BLOCK_TYPE[entry.category] ?? 'document';
+  return {
+    type,
+    ...(content.data !== undefined ? { data: content.data } : {}),
+    ...(content.uri !== undefined ? { uri: content.uri } : {}),
+    mime_type: entry.mimeType,
+  } as unknown as Interactions.Content;
+}
+
+// ============================================================================
 // Probe Engine
 // ============================================================================
 
@@ -660,7 +709,7 @@ class MimeTypeProber {
   }
 
   /**
-   * Test inline base64 upload via generateContent
+   * Test inline base64 upload via the Interactions API.
    */
   private async testInline(entry: MimeTypeEntry, content: Buffer): Promise<TestOutcome> {
     const start = Date.now();
@@ -668,22 +717,13 @@ class MimeTypeProber {
       const base64Data = content.toString('base64');
 
       await this.rateLimiter.withRetry(async () => {
-        await this.client.models.generateContent({
+        await this.client.interactions.create({
           model: this.model,
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: entry.mimeType,
-                    data: base64Data,
-                  },
-                },
-                { text: 'Acknowledge this file with one word: OK' },
-              ],
-            },
-          ],
+          store: false,
+          input: [
+            buildContentBlock(entry, { data: base64Data }),
+            { type: 'text', text: 'Acknowledge this file with one word: OK' },
+          ] as unknown as Interactions.Content[],
         });
       });
 

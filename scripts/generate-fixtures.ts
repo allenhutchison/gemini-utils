@@ -175,7 +175,26 @@ const EPUB_XML = {
     '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">' +
     '<dc:title>Probe Fixture</dc:title><dc:language>en</dc:language>' +
     '<dc:identifier id="uid">urn:uuid:00000000-0000-0000-0000-000000000000</dc:identifier>' +
-    '</metadata><manifest/><spine/></package>\n',
+    '</metadata>' +
+    '<manifest>' +
+    '<item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>' +
+    '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>' +
+    '</manifest>' +
+    '<spine toc="ncx"><itemref idref="chapter1"/></spine>' +
+    '</package>\n',
+  'chapter1.xhtml':
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n' +
+    '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Probe Fixture</title></head>' +
+    '<body><h1>Probe Fixture</h1><p>Hello.</p></body></html>\n',
+  'toc.ncx':
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">' +
+    '<head><meta name="dtb:uid" content="urn:uuid:00000000-0000-0000-0000-000000000000"/></head>' +
+    '<docTitle><text>Probe Fixture</text></docTitle>' +
+    '<navMap><navPoint id="nav1" playOrder="1"><navLabel><text>Chapter 1</text></navLabel>' +
+    '<content src="chapter1.xhtml"/></navPoint></navMap>' +
+    '</ncx>\n',
 };
 
 // ---------------------------------------------------------------------------
@@ -246,14 +265,23 @@ function ooxmlFixture(name: string, files: Record<string, string>): FixtureSpec 
   };
 }
 
-/** EPUB: mimetype must be the first entry, stored uncompressed. */
+/** EPUB 2.0: mimetype must be the first, stored entry, and the OPF must
+ * reference at least one content document via manifest + spine. */
 const epubFixture: FixtureSpec = {
   name: 'epub',
-  description: 'minimal valid EPUB (mimetype stored first)',
+  description: 'minimal valid EPUB 2.0 (content document + NCX + spine)',
   validate: (file) => {
     const mimetype = execFileSync('unzip', ['-p', file, 'mimetype'], { encoding: 'utf8' }).trim();
     if (mimetype !== 'application/epub+zip') {
       throw new Error(`bad epub mimetype entry: "${mimetype}"`);
+    }
+    const opf = execFileSync('unzip', ['-p', file, 'content.opf'], { encoding: 'utf8' });
+    if (!opf.includes('<itemref idref="chapter1"')) {
+      throw new Error('content.opf has no spine itemref for chapter1');
+    }
+    const ncx = execFileSync('unzip', ['-p', file, 'toc.ncx'], { encoding: 'utf8' });
+    if (!ncx.includes('<navMap>') || !ncx.includes('chapter1.xhtml')) {
+      throw new Error('toc.ncx has no navMap entry pointing at chapter1.xhtml');
     }
     execFileSync('unzip', ['-t', file], { stdio: 'pipe' });
   },
@@ -264,11 +292,17 @@ const epubFixture: FixtureSpec = {
     fs.writeFileSync(path.join(scratch, 'mimetype'), EPUB_XML.mimetype);
     fs.writeFileSync(path.join(scratch, 'META-INF/container.xml'), EPUB_XML['META-INF/container.xml']);
     fs.writeFileSync(path.join(scratch, 'content.opf'), EPUB_XML['content.opf']);
+    fs.writeFileSync(path.join(scratch, 'chapter1.xhtml'), EPUB_XML['chapter1.xhtml']);
+    fs.writeFileSync(path.join(scratch, 'toc.ncx'), EPUB_XML['toc.ncx']);
     // Info-Zip appends ".zip" when the target has no extension, so write to
     // <name>.zip and rename (mimetype must be the first, uncompressed entry).
     const zipFile = path.join(OUT_DIR, 'epub.zip');
     execFileSync('zip', ['-q', '-X0', zipFile, 'mimetype'], { cwd: scratch, stdio: ['ignore', 'pipe', 'inherit'] });
-    execFileSync('zip', ['-q', '-r', '-X', '-D', zipFile, 'META-INF', 'content.opf'], { cwd: scratch, stdio: ['ignore', 'pipe', 'inherit'] });
+    execFileSync(
+      'zip',
+      ['-q', '-r', '-X', '-D', zipFile, 'META-INF', 'content.opf', 'chapter1.xhtml', 'toc.ncx'],
+      { cwd: scratch, stdio: ['ignore', 'pipe', 'inherit'] }
+    );
     fs.renameSync(zipFile, path.join(OUT_DIR, 'epub'));
     fs.rmSync(scratch, { recursive: true, force: true });
   },

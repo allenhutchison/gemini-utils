@@ -854,9 +854,8 @@
     "description": "3GP video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -866,9 +865,8 @@
     "description": "3GP2 video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -878,9 +876,8 @@
     "description": "MP4 video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -890,9 +887,8 @@
     "description": "MPEG video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -902,9 +898,8 @@
     "description": "QuickTime video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -914,9 +909,8 @@
     "description": "WebM video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -926,9 +920,8 @@
     "description": "FLV video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -938,9 +931,8 @@
     "description": "MKV video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -950,9 +942,8 @@
     "description": "WMV video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -962,9 +953,8 @@
     "description": "AVI video",
     "models": {
       "gemini-flash-latest": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+        "inline": true,
+        "fileApi": true
       }
     }
   }

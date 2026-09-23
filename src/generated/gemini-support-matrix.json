@@ -4,10 +4,9 @@
     "extension": ".epub",
     "description": "EPUB ebook",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -16,10 +15,9 @@
     "extension": ".graphql",
     "description": "GraphQL",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -28,10 +26,9 @@
     "extension": ".gz",
     "description": "GZIP archive",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -40,10 +37,9 @@
     "extension": ".mjs",
     "description": "JavaScript (application)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -52,7 +48,7 @@
     "extension": ".json",
     "description": "JSON",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -63,10 +59,9 @@
     "extension": ".jsonld",
     "description": "JSON-LD",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -75,10 +70,9 @@
     "extension": ".doc",
     "description": "Word document (legacy)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -87,10 +81,9 @@
     "extension": ".bin",
     "description": "Binary data",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -99,7 +92,7 @@
     "extension": ".pdf",
     "description": "PDF document",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -110,7 +103,7 @@
     "extension": ".rtf",
     "description": "Rich Text Format",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -121,10 +114,9 @@
     "extension": ".mts",
     "description": "TypeScript (application)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -133,10 +125,9 @@
     "extension": ".xls",
     "description": "Excel spreadsheet (legacy)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -145,10 +136,9 @@
     "extension": ".ppt",
     "description": "PowerPoint (legacy)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -157,10 +147,9 @@
     "extension": ".pptx",
     "description": "PowerPoint (OOXML)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -169,7 +158,7 @@
     "extension": ".xlsx",
     "description": "Excel spreadsheet (OOXML)",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -181,10 +170,9 @@
     "extension": ".docx",
     "description": "Word document (OOXML)",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -193,10 +181,9 @@
     "extension": ".wasm",
     "description": "WebAssembly",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -205,10 +192,9 @@
     "extension": ".tar",
     "description": "TAR archive",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -217,10 +203,9 @@
     "extension": ".yamldata",
     "description": "YAML data",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -229,10 +214,9 @@
     "extension": ".xmldata",
     "description": "XML data",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -241,10 +225,9 @@
     "extension": ".zip",
     "description": "ZIP archive",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -253,10 +236,9 @@
     "extension": ".aac",
     "description": "AAC audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -265,7 +247,7 @@
     "extension": ".amr",
     "description": "AMR audio",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -276,10 +258,9 @@
     "extension": ".flac",
     "description": "FLAC audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -288,7 +269,7 @@
     "extension": ".mid",
     "description": "MIDI audio",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -300,10 +281,9 @@
     "extension": ".m4a",
     "description": "M4A audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -312,10 +292,9 @@
     "extension": ".mp3",
     "description": "MP3 audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -324,10 +303,9 @@
     "extension": ".ogg",
     "description": "OGG audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -336,10 +314,9 @@
     "extension": ".opus",
     "description": "Opus audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -348,10 +325,9 @@
     "extension": ".wav",
     "description": "WAV audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -360,10 +336,9 @@
     "extension": ".weba",
     "description": "WebM audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -372,10 +347,9 @@
     "extension": ".aiff",
     "description": "AIFF audio",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -384,10 +358,9 @@
     "extension": ".otf",
     "description": "OpenType font",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -396,10 +369,9 @@
     "extension": ".ttf",
     "description": "TrueType font",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -408,10 +380,9 @@
     "extension": ".woff",
     "description": "WOFF font",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -420,10 +391,9 @@
     "extension": ".woff2",
     "description": "WOFF2 font",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -432,10 +402,9 @@
     "extension": ".avif",
     "description": "AVIF image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -444,10 +413,9 @@
     "extension": ".bmp",
     "description": "BMP image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -456,7 +424,7 @@
     "extension": ".gif",
     "description": "GIF image",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -467,10 +435,9 @@
     "extension": ".heic",
     "description": "HEIC image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -479,10 +446,9 @@
     "extension": ".heif",
     "description": "HEIF image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -491,10 +457,9 @@
     "extension": ".jpg",
     "description": "JPEG image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -503,10 +468,9 @@
     "extension": ".png",
     "description": "PNG image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -515,10 +479,9 @@
     "extension": ".svg",
     "description": "SVG image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -527,10 +490,9 @@
     "extension": ".tiff",
     "description": "TIFF image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -539,10 +501,9 @@
     "extension": ".webp",
     "description": "WebP image",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -551,10 +512,9 @@
     "extension": ".ico",
     "description": "ICO icon",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -563,7 +523,7 @@
     "extension": ".css",
     "description": "CSS stylesheet",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -574,7 +534,7 @@
     "extension": ".csv",
     "description": "CSV data",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -585,7 +545,7 @@
     "extension": ".html",
     "description": "HTML",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -596,7 +556,7 @@
     "extension": ".js",
     "description": "JavaScript source",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -607,7 +567,7 @@
     "extension": ".md",
     "description": "Markdown",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -618,7 +578,7 @@
     "extension": ".txt",
     "description": "Plain text",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -629,10 +589,9 @@
     "extension": ".c",
     "description": "C source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -641,10 +600,9 @@
     "extension": ".cpp",
     "description": "C++ source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -653,10 +611,9 @@
     "extension": ".clj",
     "description": "Clojure source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -665,10 +622,9 @@
     "extension": ".diff",
     "description": "Diff/patch",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -677,10 +633,9 @@
     "extension": ".ex",
     "description": "Elixir source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -689,10 +644,9 @@
     "extension": ".erl",
     "description": "Erlang source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -701,10 +655,9 @@
     "extension": ".go",
     "description": "Go source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -713,10 +666,9 @@
     "extension": ".hs",
     "description": "Haskell source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -725,10 +677,9 @@
     "extension": ".java",
     "description": "Java source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -737,10 +688,9 @@
     "extension": ".kt",
     "description": "Kotlin source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -749,10 +699,9 @@
     "extension": ".lua",
     "description": "Lua source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -761,10 +710,9 @@
     "extension": ".pl",
     "description": "Perl source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -773,10 +721,9 @@
     "extension": ".php",
     "description": "PHP source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -785,7 +732,7 @@
     "extension": ".py",
     "description": "Python source",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -796,10 +743,9 @@
     "extension": ".rb",
     "description": "Ruby source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -808,10 +754,9 @@
     "extension": ".rs",
     "description": "Rust source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -820,10 +765,9 @@
     "extension": ".scala",
     "description": "Scala source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -832,10 +776,9 @@
     "extension": ".sh",
     "description": "Shell script",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -844,10 +787,9 @@
     "extension": ".sql",
     "description": "SQL",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -856,10 +798,9 @@
     "extension": ".swift",
     "description": "Swift source",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -868,10 +809,9 @@
     "extension": ".toml",
     "description": "TOML",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -880,7 +820,7 @@
     "extension": ".ts",
     "description": "TypeScript source",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -891,10 +831,9 @@
     "extension": ".yaml",
     "description": "YAML",
     "models": {
-      "gemini-3-flash-preview": {
-        "inline": false,
-        "fileApi": true,
-        "inlineErrorClass": "unknown"
+      "gemini-flash-latest": {
+        "inline": true,
+        "fileApi": true
       }
     }
   },
@@ -903,7 +842,7 @@
     "extension": ".xml",
     "description": "XML",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": true,
         "fileApi": true
       }
@@ -914,7 +853,7 @@
     "extension": ".3gp",
     "description": "3GP video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -926,7 +865,7 @@
     "extension": ".3g2",
     "description": "3GP2 video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -938,7 +877,7 @@
     "extension": ".mp4",
     "description": "MP4 video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -950,7 +889,7 @@
     "extension": ".mpeg",
     "description": "MPEG video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -962,7 +901,7 @@
     "extension": ".mov",
     "description": "QuickTime video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -974,7 +913,7 @@
     "extension": ".webm",
     "description": "WebM video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -986,7 +925,7 @@
     "extension": ".flv",
     "description": "FLV video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -998,7 +937,7 @@
     "extension": ".mkv",
     "description": "MKV video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -1010,7 +949,7 @@
     "extension": ".wmv",
     "description": "WMV video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"
@@ -1022,7 +961,7 @@
     "extension": ".avi",
     "description": "AVI video",
     "models": {
-      "gemini-3-flash-preview": {
+      "gemini-flash-latest": {
         "inline": false,
         "fileApi": true,
         "inlineErrorClass": "unknown"

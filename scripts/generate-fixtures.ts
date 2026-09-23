@@ -347,7 +347,9 @@ function audioFixture(name: string, codecArgs: string[], fileSig: string | strin
   };
 }
 
-/** Real 2-frame silent video via ffmpeg (H.263/MPEG-1 require their own sizes/fps). */
+/** Real 2s silent video via ffmpeg (H.263/MPEG-1 require their own sizes/fps).
+ * Duration matters: sub-second clips were rejected with 400 invalid-argument
+ * by the API even though the files are valid. */
 function videoFixture(
   name: string,
   codecArgs: string[],
@@ -358,13 +360,13 @@ function videoFixture(
 ): FixtureSpec {
   return {
     name,
-    description: `2-frame real ${size}@${fps}fps video (${codecArgs[1]}, ffmpeg)`,
+    description: `2s real ${size}@${fps}fps video (${codecArgs[1]}, ffmpeg)`,
     fileSig,
     ffprobeFormat,
     generate: () =>
       ffmpeg(path.join(OUT_DIR, name), [
         '-f', 'lavfi', '-i', `color=c=red:s=${size}:r=${fps}`,
-        '-t', '0.3',
+        '-t', '2',
         ...codecArgs,
       ]),
   };
@@ -425,7 +427,7 @@ const epubFixture: FixtureSpec = {
 
 const midiFixture: FixtureSpec = {
   name: 'mid',
-  description: 'hand-built minimal MIDI (SMF 0)',
+  description: 'hand-built minimal MIDI (SMF 0, ~2s melody)',
   fileSig: 'Standard MIDI',
   generate: () => {
     const header = Buffer.from([
@@ -435,13 +437,20 @@ const midiFixture: FixtureSpec = {
       0x00, 0x01,             // one track
       0x01, 0xe0,             // division: 480 ticks/quarter
     ]);
-    const trackBody = Buffer.from([
+    // 8-note ascending melody (C4..C5), 120 ticks (0.25s) per event pair
+    // at 120 BPM -> ~2s total. Sub-second single-note files were rejected
+    // by the API with 400 invalid-argument.
+    const pitches = [60, 62, 64, 65, 67, 69, 71, 72];
+    const events: number[] = [
       0x00, 0xff, 0x51, 0x03, 0x07, 0xa1, 0x20, // tempo: 120 BPM
       0x00, 0xc0, 0x00,                         // program change (piano)
-      0x00, 0x90, 0x3c, 0x40,                   // note on C4
-      0x3c, 0x80, 0x3c, 0x00,                   // delta 60, note off C4
-      0x00, 0xff, 0x2f, 0x00,                   // end of track
-    ]);
+    ];
+    for (const pitch of pitches) {
+      events.push(0x78, 0x90, pitch, 0x40); // delta 120 ticks, note on
+      events.push(0x78, 0x80, pitch, 0x00); // delta 120 ticks, note off
+    }
+    events.push(0x00, 0xff, 0x2f, 0x00);      // end of track
+    const trackBody = Buffer.from(events);
     const track = Buffer.concat([
       Buffer.from([0x4d, 0x54, 0x72, 0x6b]), // "MTrk"
       Buffer.from([0x00, 0x00, 0x00, trackBody.length]),

@@ -2,8 +2,8 @@ name: Probe Gemini MIME Type Support
 
 on:
   schedule:
-    # Run weekly on Sundays at 04:00 UTC
-    - cron: '0 4 * * 0'
+    # Run monthly on the 1st at 04:00 UTC
+    - cron: '0 4 1 * *'
   workflow_dispatch:
     inputs:
       models:
@@ -55,7 +55,7 @@ jobs:
           title: 'chore: update Gemini MIME type support matrix'
           body: |
             ## Summary
-            - Automated weekly probe of Gemini API MIME type support
+            - Automated monthly probe of Gemini API MIME type support
             - Updates `src/generated/gemini-support-matrix.json` with latest probe results
 
             ## Changes

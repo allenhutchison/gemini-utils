@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/allenhutchison/gemini-utils/compare/v1.2.0...v1.3.0) (2026-09-23)
+
+
+### Features
+
+* migrate MIME type probe to the Interactions API ([#71](https://github.com/allenhutchison/gemini-utils/issues/71)) ([89747ac](https://github.com/allenhutchison/gemini-utils/commit/89747ac8c3443ae0063d197225f6e93b5279fcc3))
+
+
+### Bug Fixes
+
+* **probe:** lengthen video and MIDI fixtures to 2 seconds ([#76](https://github.com/allenhutchison/gemini-utils/issues/76)) ([67220bf](https://github.com/allenhutchison/gemini-utils/commit/67220bf8c3b1da92b2cc84fa13fd1e661cf6253f))
+* **probe:** use real sample media files to eliminate false negatives ([#74](https://github.com/allenhutchison/gemini-utils/issues/74)) ([8aa8c8a](https://github.com/allenhutchison/gemini-utils/commit/8aa8c8abbad2ab342d8c993d34c9951de9d63de0))
+
 ## [1.2.0](https://github.com/allenhutchison/gemini-utils/compare/v1.1.0...v1.2.0) (2026-07-10)
 
 

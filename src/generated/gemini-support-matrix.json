@@ -126,8 +126,9 @@
     "description": "Excel spreadsheet (legacy)",
     "models": {
       "gemini-flash-latest": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },

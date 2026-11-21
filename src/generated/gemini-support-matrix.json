@@ -71,8 +71,9 @@
     "description": "Word document (legacy)",
     "models": {
       "gemini-flash-latest": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -126,8 +127,9 @@
     "description": "Excel spreadsheet (legacy)",
     "models": {
       "gemini-flash-latest": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },
@@ -137,8 +139,9 @@
     "description": "PowerPoint (legacy)",
     "models": {
       "gemini-flash-latest": {
-        "inline": true,
-        "fileApi": true
+        "inline": false,
+        "fileApi": true,
+        "inlineErrorClass": "unknown"
       }
     }
   },

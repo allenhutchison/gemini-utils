@@ -679,7 +679,7 @@ class MimeTypeProber {
   private rateLimiter: RateLimiter;
 
   constructor(apiKey: string, model: string = 'gemini-flash-latest') {
-    this.client = new GoogleGenAI({ apiKey, vertexai: false });
+    this.client = new GoogleGenAI({ apiKey, vertexai: false, apiVersion: 'v1beta' });
     this.model = model;
     this.sampleDir = path.join(__dirname, '.probe-samples');
     this.rateLimiter = new RateLimiter(30, 3);

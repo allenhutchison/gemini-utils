@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/allenhutchison/gemini-utils/compare/v1.3.0...v1.3.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* **cli:** pin the Gemini API version to v1beta ([#91](https://github.com/allenhutchison/gemini-utils/issues/91)) ([6bb29aa](https://github.com/allenhutchison/gemini-utils/commit/6bb29aa3a176567f0578f22203b1edae5a1e4b86))
+
 ## [1.3.0](https://github.com/allenhutchison/gemini-utils/compare/v1.2.0...v1.3.0) (2026-09-23)
 
 

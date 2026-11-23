@@ -9,6 +9,16 @@ import { ExitCode } from './errors.js';
 export const EXIT_CODE_NO_API_KEY = ExitCode.NO_API_KEY;
 
 /**
+ * Gemini API version the CLI talks to.
+ *
+ * `@google/genai` 3.x changed its default from `v1beta` to `v1`, but the
+ * `-latest` model aliases and the Interactions API are served on `v1beta`.
+ * Pinning it keeps the CLI's behaviour the same on every SDK version the
+ * `>=2.0.0` peer range allows.
+ */
+export const GEMINI_API_VERSION = 'v1beta';
+
+/**
  * Creates a GoogleGenAI client from the provided API key, environment variable, or config file.
  *
  * Lookup order:
@@ -48,5 +58,5 @@ export function createClient(apiKeyOption?: string): GoogleGenAI {
   // Explicitly disable Vertex AI routing. Enterprise environments may set
   // env vars (e.g. GOOGLE_GENAI_USE_VERTEXAI) that cause the SDK to use
   // Vertex endpoints, which do not support the interactions API.
-  return new GoogleGenAI({ apiKey, vertexai: false });
+  return new GoogleGenAI({ apiKey, vertexai: false, apiVersion: GEMINI_API_VERSION });
 }

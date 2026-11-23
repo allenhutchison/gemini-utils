@@ -75,7 +75,7 @@ async function runBenchmark(
     process.exit(1);
   }
 
-  const client = new GoogleGenAI({ apiKey });
+  const client = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
   const transcriber = new TranscriptionManager(client);
 
   const models = modelList || ['gemini-flash-latest', 'gemini-3-pro-preview'];
